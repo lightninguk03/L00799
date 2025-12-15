@@ -1,0 +1,210 @@
+{
+  "errors": {
+    "invalid_credentials": "用户名或密码错误",
+    "user_not_found": "用户不存在",
+    "post_not_found": "动态不存在",
+    "unauthorized": "未授权，请先登录",
+    "invalid_file_type": "无效的文件类型",
+    "ai_service_not_configured": "AI 服务未配置",
+    "ai_service_error": "AI 服务错误",
+    "generic": "发生未知错误",
+    "invalid_refresh_token": "登录已过期，请重新登录",
+    "email_already_exists": "邮箱已被注册",
+    "username_already_exists": "用户名已被使用",
+    "email_already_verified": "邮箱已验证",
+    "verification_code_expired": "验证码已过期",
+    "verification_code_used": "验证码已使用",
+    "invalid_verification_code": "无效的验证码",
+    "password_too_short": "密码长度至少8个字符",
+    "password_needs_letter": "密码必须包含字母",
+    "password_needs_number": "密码必须包含数字",
+    "cannot_follow_self": "不能关注自己",
+    "already_following": "已经关注",
+    "not_following": "未关注",
+    "file_too_large": "文件太大",
+    "invalid_avatar_type": "不支持的头像格式",
+    "avatar_too_large": "头像文件太大",
+    "category_not_found": "分类不存在",
+    "rate_limit": "操作太频繁，请稍后再试"
+  },
+  "nav": {
+    "home": "首页",
+    "community": "闪电社区",
+    "agent": "Mu AI",
+    "profile": "我的",
+    "gallery": "画廊",
+    "chat": "对话",
+    "search": "搜索",
+    "notifications": "通知"
+  },
+  "common": {
+    "language": "语言",
+    "english": "English",
+    "chinese": "中文",
+    "cancel": "取消",
+    "submit": "上传",
+    "submitting": "正在同步未来数据...",
+    "save": "数据存档",
+    "saving": "存档中...",
+    "delete": "删除",
+    "edit": "编辑",
+    "back": "返回",
+    "loading": "正在同步未来数据...",
+    "like": "能量共振",
+    "comment": "建立神经连接",
+    "follow": "建立链路"
+  },
+  "brand": {
+    "site_name": "LETAVERSE",
+    "site_name_cn": "莱塔宇宙",
+    "community_name": "Lightning Community",
+    "community_name_cn": "闪电社区",
+    "slogan": "灵魂无限，却受制于肉体的局限。"
+  },
+  "home": {
+    "title": "闪电社区",
+    "subtitle": "Z世代ACGM创作者的元宇宙",
+    "error": "系统错误",
+    "no_data": "未检测到数据",
+    "no_content": "暂无内容",
+    "intro_title": "关于闪电社区",
+    "intro": "来自闪电社区的 Z 世代 ACGM 创作者们通过动画、漫画、游戏、音乐、想象力和光来构建世界。",
+    "world_title": "世界背景设定",
+    "world_background": "在未来的时间线中，现实与虚拟世界的界限已完全消失。",
+    "projects_title": "我们的项目",
+    "links_title": "外站链接",
+    "link_github": "开源代码仓库",
+    "link_discord": "加入社区讨论",
+    "link_twitter": "关注最新动态"
+  },
+  "community": {
+    "title": "闪电社区",
+    "subtitle": "分享你的创作与想法",
+    "search_placeholder": "搜索记忆碎片和节点...",
+    "create_post": "上传记忆碎片",
+    "post_placeholder": "构建数据节点...",
+    "no_posts": "未检测到记忆碎片",
+    "load_more": "同步更多数据"
+  },
+  "search": {
+    "title": "搜索",
+    "placeholder": "搜索动态和用户...",
+    "posts": "动态",
+    "users": "用户",
+    "no_results": "未找到相关结果"
+  },
+  "mu_ai": {
+    "title": "Mu AI",
+    "title_cn": "穆爱",
+    "subtitle": "Central Brain · 中枢脑",
+    "greeting": "欢迎来到闪电社区，我是穆爱，你的虚拟向导。",
+    "greeting_short": "需要帮助吗？",
+    "placeholder": "与 Mu AI 对话...",
+    "status": "系统在线"
+  },
+  "gallery": {
+    "title": "视觉数据库",
+    "subtitle": "归档访问权限：公开",
+    "empty": "扇区为空"
+  },
+  "auth": {
+    "login_title": "接入节点",
+    "login_subtitle": "身份验证",
+    "register_title": "建立新连接",
+    "register_subtitle": "创建数字签名",
+    "login": "登录",
+    "logout": "退出",
+    "register": "注册",
+    "username": "用户名 / 邮箱",
+    "password": "密码",
+    "email": "电子邮箱",
+    "confirm_password": "确认密码",
+    "no_account": "还没有账号？",
+    "has_account": "已有账号？",
+    "create_account": "创建新账号",
+    "submit_login": "登录",
+    "submit_register": "注册",
+    "logging_in": "登录中...",
+    "registering": "注册中..."
+  },
+  "profile": {
+    "title": "同步终端",
+    "edit": "编辑资料",
+    "sync_level": "同步等级",
+    "following": "关注",
+    "followers": "粉丝",
+    "posts": "动态",
+    "likes": "获赞",
+    "no_followers": "暂无粉丝",
+    "no_following": "暂无关注",
+    "my_posts": { "title": "我的动态", "desc": "管理您的发布内容" },
+    "favorites": { "title": "我的收藏", "desc": "收藏的内容" },
+    "activity": { "title": "活动记录", "desc": "近期的互动" },
+    "settings": { "title": "设置", "desc": "账号与偏好设置" },
+    "notifications": { "title": "消息通知", "desc": "查看点赞、评论和关注" },
+    "stats": {
+      "posts": "动态",
+      "likes": "获赞",
+      "saved": "收藏",
+      "comments": "评论"
+    }
+  },
+  "notifications": {
+    "title": "系统信号",
+    "empty": "未检测到信号",
+    "mark_all_read": "全部标为已读",
+    "types": {
+      "like": "赞了你的动态",
+      "comment": "评论了你的动态",
+      "follow": "关注了你",
+      "repost": "转发了你的动态"
+    }
+  },
+  "user": {
+    "follow": "关注",
+    "following": "已关注",
+    "unfollow": "取消关注",
+    "followers_list": "粉丝列表",
+    "following_list": "关注列表"
+  },
+  "hud": {
+    "system_online": "SYSTEM ONLINE",
+    "sync_rate": "SYNC RATE: 99.9%"
+  },
+  "ai_chat": {
+    "title": "Mu AI",
+    "desc": "使用屏幕右下角的浮动终端访问 AI 助手。",
+    "status": "状态：在线",
+    "placeholder": "输入消息...",
+    "greeting_short": "需要帮助吗？"
+  },
+  "report": {
+    "title": "举报",
+    "post": "举报动态",
+    "comment": "举报评论",
+    "user": "举报用户",
+    "reason_placeholder": "请描述具体原因...",
+    "submit": "提交举报",
+    "success": "举报已提交，我们会尽快处理",
+    "error": "举报提交失败，请稍后重试",
+    "reasons": {
+      "spam": "垃圾信息/广告",
+      "harassment": "骚扰/欺凌",
+      "hate": "仇恨言论",
+      "violence": "暴力/危险内容",
+      "nsfw": "不当内容 (NSFW)",
+      "copyright": "侵犯版权",
+      "impersonation": "冒充他人",
+      "other": "其他"
+    }
+  },
+  "banned": {
+    "title": "账号已被封禁",
+    "subtitle": "您的账号因违反社区规定已被暂停使用",
+    "reason": "封禁原因",
+    "until": "解封时间",
+    "permanent": "永久",
+    "appeal": "如有疑问，请联系管理员申诉",
+    "back_home": "返回首页"
+  }
+}

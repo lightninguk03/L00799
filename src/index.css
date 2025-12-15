@@ -1,0 +1,539 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background-color: #050505;
+  color: #FFFFFF;
+  font-family: "Rajdhani", "Noto Sans SC", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(188, 19, 254, 0.1) 0%, transparent 60%),
+    radial-gradient(circle at 80% 10%, rgba(0, 243, 255, 0.05) 0%, transparent 40%);
+  min-height: 100vh;
+}
+
+/* Custom Scrollbar for Webkit */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333344;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00F3FF;
+  box-shadow: 0 0 10px #00F3FF;
+}
+
+/* Base Utility Classes */
+.text-glow {
+  text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+}
+
+.box-glow {
+  box-shadow: 0 0 20px rgba(188, 19, 254, 0.2);
+}
+
+/* 交错动画入场效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+
+/* ========== 赛博朋克动态效果 ========== */
+
+/* 扫描线效果 */
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+.cyber-scanline {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.4), transparent);
+  animation: scanline 4s linear infinite;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* 霓虹闪烁效果 */
+@keyframes neonFlicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    opacity: 1;
+    text-shadow: 
+      0 0 5px currentColor,
+      0 0 10px currentColor,
+      0 0 20px currentColor;
+  }
+  20%, 24%, 55% {
+    opacity: 0.8;
+    text-shadow: none;
+  }
+}
+
+.neon-flicker {
+  animation: neonFlicker 3s infinite;
+}
+
+/* 霓虹呼吸效果 */
+@keyframes neonPulse {
+  0%, 100% {
+    box-shadow: 
+      0 0 5px rgba(0, 243, 255, 0.5),
+      0 0 10px rgba(0, 243, 255, 0.3),
+      0 0 20px rgba(0, 243, 255, 0.2);
+  }
+  50% {
+    box-shadow: 
+      0 0 10px rgba(0, 243, 255, 0.8),
+      0 0 20px rgba(0, 243, 255, 0.5),
+      0 0 40px rgba(0, 243, 255, 0.3);
+  }
+}
+
+.neon-pulse {
+  animation: neonPulse 2s ease-in-out infinite;
+}
+
+/* 紫色霓虹呼吸 */
+@keyframes neonPulsePurple {
+  0%, 100% {
+    box-shadow: 
+      0 0 5px rgba(138, 43, 226, 0.5),
+      0 0 10px rgba(138, 43, 226, 0.3),
+      0 0 20px rgba(138, 43, 226, 0.2);
+  }
+  50% {
+    box-shadow: 
+      0 0 10px rgba(138, 43, 226, 0.8),
+      0 0 20px rgba(138, 43, 226, 0.5),
+      0 0 40px rgba(138, 43, 226, 0.3);
+  }
+}
+
+.neon-pulse-purple {
+  animation: neonPulsePurple 2s ease-in-out infinite;
+}
+
+/* 全息故障效果 */
+@keyframes glitch {
+  0% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+  }
+  60% {
+    transform: translate(2px, 2px);
+  }
+  80% {
+    transform: translate(2px, -2px);
+  }
+  100% {
+    transform: translate(0);
+  }
+}
+
+.glitch-hover:hover {
+  animation: glitch 0.3s ease-in-out;
+}
+
+/* 数据流动画 - 垂直 */
+@keyframes dataFlow {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 0% 100%;
+  }
+}
+
+.data-flow {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 243, 255, 0.1) 50%,
+    transparent 100%
+  );
+  background-size: 100% 200%;
+  animation: dataFlow 3s linear infinite;
+}
+
+/* 边框流光效果 */
+@keyframes borderGlow {
+  0%, 100% {
+    border-color: rgba(0, 243, 255, 0.3);
+  }
+  50% {
+    border-color: rgba(0, 243, 255, 0.8);
+  }
+}
+
+.border-glow {
+  animation: borderGlow 2s ease-in-out infinite;
+}
+
+/* 打字机效果 */
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent; }
+  50% { border-color: #00F3FF; }
+}
+
+.typewriter {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid #00F3FF;
+  animation: 
+    typing 2s steps(30, end),
+    blink-caret 0.75s step-end infinite;
+}
+
+/* 全息投影抖动 */
+@keyframes hologram {
+  0%, 100% {
+    opacity: 1;
+    transform: translateY(0) skewX(0deg);
+  }
+  25% {
+    opacity: 0.95;
+    transform: translateY(-1px) skewX(0.5deg);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(1px) skewX(-0.5deg);
+  }
+  75% {
+    opacity: 0.97;
+    transform: translateY(-0.5px) skewX(0.3deg);
+  }
+}
+
+.hologram {
+  animation: hologram 4s ease-in-out infinite;
+}
+
+/* 卡片扫描线 */
+@keyframes cardScan {
+  0% {
+    top: -100%;
+  }
+  100% {
+    top: 200%;
+  }
+}
+
+.card-scan::before {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(0, 243, 255, 0.1),
+    transparent
+  );
+  animation: cardScan 3s linear infinite;
+  pointer-events: none;
+}
+
+/* 光线追踪效果 */
+.light-trace {
+  position: relative;
+  overflow: hidden;
+}
+
+.light-trace::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(0, 243, 255, 0.15) 0%,
+    transparent 50%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.light-trace:hover::after {
+  opacity: 1;
+}
+
+/* 粒子背景 */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(-20px) translateX(10px);
+  }
+  50% {
+    transform: translateY(-10px) translateX(-10px);
+  }
+  75% {
+    transform: translateY(-30px) translateX(5px);
+  }
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgba(0, 243, 255, 0.6);
+  border-radius: 50%;
+  animation: float 8s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(0, 243, 255, 0.8);
+}
+
+/* RGB 分离效果 */
+@keyframes rgbSplit {
+  0%, 100% {
+    text-shadow: 
+      -1px 0 rgba(255, 0, 0, 0.5),
+      1px 0 rgba(0, 255, 255, 0.5);
+  }
+  50% {
+    text-shadow: 
+      -2px 0 rgba(255, 0, 0, 0.7),
+      2px 0 rgba(0, 255, 255, 0.7);
+  }
+}
+
+.rgb-split {
+  animation: rgbSplit 0.1s ease-in-out;
+}
+
+.rgb-split-hover:hover {
+  animation: rgbSplit 0.1s ease-in-out 3;
+}
+
+/* 电路板纹理动画 */
+@keyframes circuitPulse {
+  0%, 100% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.circuit-bg {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0v20M30 40v20M0 30h20M40 30h20M30 30m-3 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0' fill='none' stroke='%2300F3FF' stroke-width='0.5' opacity='0.3'/%3E%3C/svg%3E");
+  animation: circuitPulse 4s ease-in-out infinite;
+}
+
+/* 加载动画 - 可爱风格 */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.cute-bounce {
+  animation: bounce 0.6s ease-in-out infinite;
+}
+
+/* 心跳效果 */
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.1);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.1);
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+
+.heartbeat {
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+/* 渐变边框动画 */
+@keyframes gradientBorder {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.gradient-border {
+  background: linear-gradient(90deg, #00F3FF, #8A2BE2, #FF00FF, #00F3FF);
+  background-size: 300% 300%;
+  animation: gradientBorder 4s ease infinite;
+}
+
+/* 悬浮卡片效果 */
+@keyframes floatCard {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.float-card:hover {
+  animation: floatCard 2s ease-in-out infinite;
+}
+
+/* ========== 能量核心按钮效果 ========== */
+
+/* 能量核心旋转光环 */
+@keyframes energyCoreRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes energyCoreRotateReverse {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/* 能量核心呼吸效果 */
+@keyframes energyCorePulse {
+  0%, 100% {
+    box-shadow: 
+      0 0 20px rgba(138, 43, 226, 0.6),
+      0 0 40px rgba(0, 243, 255, 0.4),
+      0 0 60px rgba(255, 0, 255, 0.3),
+      inset 0 0 20px rgba(138, 43, 226, 0.3);
+  }
+  50% {
+    box-shadow: 
+      0 0 30px rgba(138, 43, 226, 0.8),
+      0 0 60px rgba(0, 243, 255, 0.6),
+      0 0 90px rgba(255, 0, 255, 0.4),
+      inset 0 0 30px rgba(138, 43, 226, 0.5);
+  }
+}
+
+/* 能量核心内部光芒 */
+@keyframes energyCoreGlow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+/* 能量场波纹 */
+@keyframes energyFieldRipple {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.energy-core-btn {
+  animation: energyCorePulse 3s ease-in-out infinite;
+}
+
+.energy-core-btn:hover {
+  animation: energyCorePulse 1.5s ease-in-out infinite;
+}
+
+.energy-ring-outer {
+  animation: energyCoreRotate 8s linear infinite;
+}
+
+.energy-ring-outer:hover,
+.energy-core-btn:hover .energy-ring-outer {
+  animation: energyCoreRotate 3s linear infinite;
+}
+
+.energy-ring-inner {
+  animation: energyCoreRotateReverse 6s linear infinite;
+}
+
+.energy-ring-inner:hover,
+.energy-core-btn:hover .energy-ring-inner {
+  animation: energyCoreRotateReverse 2s linear infinite;
+}
+
+.energy-core-glow {
+  animation: energyCoreGlow 2s ease-in-out infinite;
+}
+
+.energy-field-ripple {
+  animation: energyFieldRipple 2s ease-out infinite;
+}

@@ -1,0 +1,243 @@
+{
+  "errors": {
+    "invalid_credentials": "Invalid username or password",
+    "user_not_found": "User not found",
+    "post_not_found": "Post not found",
+    "unauthorized": "Unauthorized, please login first",
+    "invalid_file_type": "Invalid file type",
+    "ai_service_not_configured": "AI service not configured",
+    "ai_service_error": "AI service returned an error",
+    "generic": "An unknown error occurred",
+    "invalid_refresh_token": "Session expired, please login again",
+    "email_already_exists": "Email already registered",
+    "username_already_exists": "Username already taken",
+    "email_already_verified": "Email already verified",
+    "verification_code_expired": "Verification code expired",
+    "verification_code_used": "Verification code already used",
+    "invalid_verification_code": "Invalid verification code",
+    "password_too_short": "Password must be at least 8 characters",
+    "password_needs_letter": "Password must contain letters",
+    "password_needs_number": "Password must contain numbers",
+    "cannot_follow_self": "Cannot follow yourself",
+    "already_following": "Already following",
+    "not_following": "Not following",
+    "file_too_large": "File too large",
+    "invalid_avatar_type": "Invalid avatar format",
+    "avatar_too_large": "Avatar file too large",
+    "category_not_found": "Category not found",
+    "rate_limit": "Too many requests, please try again later"
+  },
+  "nav": {
+    "home": "Home",
+    "community": "Community",
+    "agent": "Mu AI",
+    "profile": "Profile",
+    "gallery": "Gallery",
+    "chat": "Chat",
+    "search": "Search",
+    "notifications": "Notifications"
+  },
+  "common": {
+    "language": "Language",
+    "english": "English",
+    "chinese": "中文",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "submitting": "Submitting...",
+    "save": "Save",
+    "saving": "Saving...",
+    "delete": "Delete",
+    "edit": "Edit",
+    "loading": "Loading...",
+    "no_more": "No more",
+    "retry": "Retry",
+    "confirm": "Confirm",
+    "back": "Back"
+  },
+  "brand": {
+    "site_name": "LETAVERSE",
+    "site_name_cn": "莱塔宇宙",
+    "community_name": "Lightning Community",
+    "community_name_cn": "闪电社区",
+    "slogan": "The soul is infinite, yet bound by the limits of flesh.",
+    "slogan_cn": "灵魂无限，却受制于肉体的局限。"
+  },
+  "home": {
+    "title": "LIGHTNING COMMUNITY",
+    "subtitle": "Z-Generation ACGM Creators Metaverse",
+    "error": "SYSTEM ERROR",
+    "no_data": "NO DATA DETECTED",
+    "no_content": "No content"
+  }
+,
+  "home_content": {
+    "intro_title": "About Lightning Community",
+    "intro": "From the Lightning Community, Z-generation ACGM creators build worlds through animation, comics, games, music, imagination, and light. They are the true natives of the metaverse, seeking balance at the intersection of reality and fantasy, and discovering the frequency where the universe and the self harmonize.",
+    "world_title": "World Background",
+    "world_background": "In a future timeline, the boundary between reality and the virtual world has completely collapsed. Humanity has become lost within a manipulated digital realm, and the real world is on the verge of disintegration. To awaken humankind and restore the balance between the virtual and the real, future humans created a mysterious device known as the Lightning Converter (L Converter). They traveled back through time to the year 2025, when human consciousness had not yet been fully digitized, and from that point began constructing Lightning Community — a virtual metaverse city of lightning that bridges reality and the future.",
+    "projects_title": "Our Projects",
+    "links_title": "External Links",
+    "link_github": "Open Source Repository",
+    "link_discord": "Join Community",
+    "link_twitter": "Follow Updates"
+  },
+  "projects": {
+    "l_converter": {
+      "name": "L Converter",
+      "description": "A virtual avatar metaverse social platform designed for fans of the 2D world. Create your own OC character, step into a virtual universe, interact with like-minded users, produce creative content, and showcase your virtual identity.",
+      "features": ["Avatar Creation", "Virtual Social", "Community Hub"]
+    },
+    "vtuber": {
+      "name": "VTuber & Music Project",
+      "description": "Virtual Idol incubation platform for individual creators and groups.",
+      "features": ["Stage and Ranking", "Virtual Weekly", "Creator Incubation"]
+    }
+  },
+  "community": {
+    "title": "LIGHTNING COMMUNITY",
+    "subtitle": "Share your creations and ideas",
+    "search_placeholder": "Search posts and users...",
+    "create_post": "Create Post",
+    "post_placeholder": "Share your thoughts...",
+    "no_posts": "No posts yet",
+    "load_more": "Load More"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search posts and users...",
+    "posts": "Posts",
+    "users": "Users",
+    "no_results": "No results found"
+  },
+  "mu_ai": {
+    "title": "Mu AI",
+    "title_cn": "穆爱",
+    "subtitle": "Central Brain",
+    "greeting": "Welcome to Lightning Community. I am Mu AI, your virtual guide. Here, the soul resonates with its digital self.",
+    "greeting_short": "Need assistance?",
+    "placeholder": "Chat with Mu AI...",
+    "status": "SYSTEM ONLINE"
+  },
+  "gallery": {
+    "title": "VISUAL DATABASE",
+    "subtitle": "Archive Access Level: Public",
+    "empty": "SECTOR EMPTY"
+  },
+  "auth": {
+    "login_title": "ACCESS NODE",
+    "login_subtitle": "Identity Verification",
+    "register_title": "NEW UPLINK",
+    "register_subtitle": "Create your digital signature",
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "username": "Username / Email",
+    "password": "Password",
+    "email": "Email",
+    "confirm_password": "Confirm Password",
+    "no_account": "No account?",
+    "has_account": "Already have an account?",
+    "create_account": "Create Account",
+    "submit_login": "Login",
+    "submit_register": "Register",
+    "logging_in": "Logging in...",
+    "registering": "Registering...",
+    "forgot_password": "Forgot password?",
+    "verify_email": "Verify Email",
+    "resend_code": "Resend Code"
+  },
+  "profile": {
+    "title": "Profile",
+    "edit": "Edit Profile",
+    "sync_level": "SYNC LEVEL",
+    "following": "Following",
+    "followers": "Followers",
+    "posts": "Posts",
+    "likes": "Likes",
+    "no_followers": "No followers yet",
+    "no_following": "Not following anyone",
+    "my_posts": {
+      "title": "My Posts",
+      "desc": "Manage your posts"
+    },
+    "favorites": {
+      "title": "Favorites",
+      "desc": "Saved content"
+    },
+    "activity": {
+      "title": "Activity",
+      "desc": "Recent interactions"
+    },
+    "settings": {
+      "title": "Settings",
+      "desc": "Account & preferences"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "desc": "View likes, comments and follows"
+    },
+    "stats": {
+      "posts": "Posts",
+      "likes": "Likes",
+      "saved": "Saved",
+      "comments": "Comments"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications",
+    "mark_all_read": "Mark all as read",
+    "types": {
+      "like": "liked your post",
+      "comment": "commented on your post",
+      "follow": "followed you",
+      "repost": "reposted your post"
+    }
+  },
+  "user": {
+    "follow": "Follow",
+    "following": "Following",
+    "unfollow": "Unfollow",
+    "followers_list": "Followers",
+    "following_list": "Following"
+  },
+  "hud": {
+    "system_online": "SYSTEM ONLINE",
+    "sync_rate": "SYNC RATE: 99.9%"
+  },
+  "ai_chat": {
+    "title": "Mu AI",
+    "desc": "Access the AI assistant using the floating terminal on the bottom right. Mu AI is always listening.",
+    "status": "STATUS: ONLINE",
+    "placeholder": "Type message..."
+  },
+  "report": {
+    "title": "Report",
+    "post": "Report Post",
+    "comment": "Report Comment",
+    "user": "Report User",
+    "reason_placeholder": "Please describe the reason...",
+    "submit": "Submit Report",
+    "success": "Report submitted, we will review it soon",
+    "error": "Failed to submit report, please try again",
+    "reasons": {
+      "spam": "Spam/Advertising",
+      "harassment": "Harassment/Bullying",
+      "hate": "Hate Speech",
+      "violence": "Violence/Dangerous Content",
+      "nsfw": "Inappropriate Content (NSFW)",
+      "copyright": "Copyright Infringement",
+      "impersonation": "Impersonation",
+      "other": "Other"
+    }
+  },
+  "banned": {
+    "title": "Account Banned",
+    "subtitle": "Your account has been suspended for violating community guidelines",
+    "reason": "Ban Reason",
+    "until": "Unban Date",
+    "permanent": "Permanent",
+    "appeal": "If you have questions, please contact admin to appeal",
+    "back_home": "Back to Home"
+  }
+}
