@@ -2,10 +2,39 @@
 初始化网站默认配置
 
 运行: python init_config.py
+
+功能:
+1. 创建媒体库目录
+2. 复制默认图片到媒体库（如果前端 public 目录存在）
+3. 初始化数据库配置
 """
+import os
+import shutil
+from pathlib import Path
 from sqlmodel import Session
 from app.database import engine, create_db_and_tables
 from app.services.config_service import set_config, get_config
+
+
+# 默认图片配置 - 前端 public 目录中的图片
+DEFAULT_IMAGES = {
+    "logo": "logo.jpg",
+    "favicon": "favicon.jpg",
+    "background": "bg_cyberpunk.jpg",
+    "hero_background": "bg_hero.jpg",
+    "ai_kanban": "kanban_girl.png",
+    "default_avatar": "default_avatar.jpg",
+}
+
+# 前端 public 目录的可能位置（相对于后端项目根目录）
+# 可以通过命令行参数指定: python init_config.py --frontend-path "../agc网站前端/public"
+FRONTEND_PUBLIC_PATHS = [
+    "../agc网站前端/public",  # 同级目录
+    "../frontend/public",
+    "../client/public",
+    "frontend/public",
+    "image",  # 本地 image 目录
+]
 
 
 # AI 默认提示词
@@ -108,7 +137,60 @@ DEFAULT_CONFIGS = [
 ]
 
 
-def init_configs():
+def find_frontend_public():
+    """查找前端 public 目录"""
+    for path in FRONTEND_PUBLIC_PATHS:
+        full_path = Path(path)
+        if full_path.exists() and full_path.is_dir():
+            return full_path
+    return None
+
+
+def init_media_directory():
+    """创建媒体库目录"""
+    uploads_dir = Path("uploads/images")
+    uploads_dir.mkdir(parents=True, exist_ok=True)
+    print(f"  ✅ 媒体库目录: {uploads_dir.absolute()}")
+    return uploads_dir
+
+
+def copy_default_images(frontend_public: Path, uploads_dir: Path) -> dict:
+    """
+    从前端 public 目录复制默认图片到媒体库
+    返回成功复制的图片配置
+    """
+    copied_configs = {}
+    
+    for config_key, filename in DEFAULT_IMAGES.items():
+        # 尝试多种可能的路径
+        possible_paths = [
+            frontend_public / filename,
+            frontend_public / "images" / filename,
+            frontend_public / "assets" / filename,
+            frontend_public / "assets" / "images" / filename,
+        ]
+        
+        source_file = None
+        for path in possible_paths:
+            if path.exists():
+                source_file = path
+                break
+        
+        if source_file:
+            dest_file = uploads_dir / filename
+            if not dest_file.exists():
+                shutil.copy2(source_file, dest_file)
+                print(f"  ✅ 复制图片: {filename}")
+            else:
+                print(f"  ⏭️  图片已存在: {filename}")
+            copied_configs[config_key] = f"/uploads/images/{filename}"
+        else:
+            print(f"  ⚠️  未找到图片: {filename}")
+    
+    return copied_configs
+
+
+def init_configs(image_configs: dict = None):
     """初始化默认配置"""
     create_db_and_tables()
     
@@ -119,10 +201,15 @@ def init_configs():
         for config in DEFAULT_CONFIGS:
             existing = get_config(session, config["key"])
             if existing is None:
+                # 如果是图片配置且有复制的图片，使用复制的路径
+                value = config["value"]
+                if image_configs and config["key"] in image_configs:
+                    value = image_configs[config["key"]]
+                
                 set_config(
                     session,
                     key=config["key"],
-                    value=config["value"],
+                    value=value,
                     category=config["category"],
                     description=config["description"]
                 )
@@ -139,17 +226,64 @@ def init_configs():
 
 def main():
     print("=" * 50)
-    print("🔧 Project Neon 网站配置初始化 V2.6.2")
+    print("🔧 Project Neon 网站配置初始化 V2.6.3")
     print("=" * 50)
     print()
     
-    init_configs()
+    # 1. 创建媒体库目录
+    print("📁 步骤 1: 创建媒体库目录")
+    uploads_dir = init_media_directory()
+    print()
+    
+    # 2. 查找前端 public 目录并复制默认图片
+    print("🖼️  步骤 2: 复制默认图片")
+    frontend_public = find_frontend_public()
+    image_configs = {}
+    
+    if frontend_public:
+        print(f"  📂 找到前端目录: {frontend_public.absolute()}")
+        image_configs = copy_default_images(frontend_public, uploads_dir)
+    else:
+        print("  ⚠️  未找到前端 public 目录，跳过图片复制")
+        print("  💡 提示: 可以手动将图片放入 uploads/images/ 目录")
+        print(f"  💡 搜索路径: {FRONTEND_PUBLIC_PATHS}")
+    print()
+    
+    # 3. 初始化数据库配置
+    print("⚙️  步骤 3: 初始化数据库配置")
+    init_configs(image_configs)
     
     print()
     print("=" * 50)
-    print("💡 提示: 可在管理后台 /admin 修改这些配置")
+    print("✅ 初始化完成!")
+    print()
+    print("💡 提示:")
+    print("   - 管理后台: http://localhost:8000/admin")
+    print("   - 网站配置: /admin/site-config/list")
+    print("   - 媒体库: /admin/media/list")
+    if not frontend_public:
+        print()
+        print("⚠️  默认图片未复制，请手动上传或设置以下配置:")
+        for key, filename in DEFAULT_IMAGES.items():
+            print(f"   - {key}: {filename}")
     print("=" * 50)
 
 
 if __name__ == "__main__":
+    import sys
+    
+    # 支持命令行参数指定前端目录
+    if len(sys.argv) > 1:
+        if sys.argv[1] in ["--help", "-h"]:
+            print("用法: python init_config.py [前端public目录路径]")
+            print()
+            print("示例:")
+            print("  python init_config.py")
+            print("  python init_config.py ../agc网站前端/public")
+            print("  python init_config.py C:/projects/frontend/public")
+            sys.exit(0)
+        else:
+            # 添加用户指定的路径到搜索列表最前面
+            FRONTEND_PUBLIC_PATHS.insert(0, sys.argv[1])
+    
     main()

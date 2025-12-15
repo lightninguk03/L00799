@@ -98,16 +98,20 @@ async def create_post(
 
     if files:
         for file in files:
-            if file.content_type.startswith("image/"):
+            # 只允许上传图片和视频
+            if file.content_type and file.content_type.startswith("image/"):
                 await validate_image(file)
                 url = await save_file(file, "images", user_id=current_user.id)
                 media_urls.append(url)
                 media_type = MediaType.IMAGE
-            elif file.content_type.startswith("video/"):
+            elif file.content_type and file.content_type.startswith("video/"):
                 await validate_video(file)
                 url = await save_file(file, "videos", user_id=current_user.id)
                 media_urls.append(url)
                 media_type = MediaType.VIDEO
+            else:
+                # 拒绝其他类型文件
+                raise APIException(400, "invalid_file_type", "只支持上传图片和视频文件")
 
     post = Post(
         user_id=current_user.id,

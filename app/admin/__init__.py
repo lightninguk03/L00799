@@ -2,6 +2,7 @@
 SQLAdmin 管理后台配置
 """
 import os
+from datetime import datetime, timedelta, timezone
 from sqladmin import Admin, ModelView
 from starlette.requests import Request
 from app.database import engine
@@ -9,6 +10,25 @@ from app.admin.auth import AdminAuth
 from app.admin.dashboard import DashboardView
 from app.admin.reports import ReportsView
 from app.admin.help import HelpView
+
+
+# 北京时区 UTC+8
+BEIJING_TZ = timezone(timedelta(hours=8))
+
+
+def format_datetime_beijing(model, attribute):
+    """将 UTC 时间转换为北京时间显示"""
+    value = getattr(model, attribute.key, None)
+    if value is None:
+        return "-"
+    
+    # 如果是 naive datetime，假设是 UTC
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=timezone.utc)
+    
+    # 转换为北京时间
+    beijing_time = value.astimezone(BEIJING_TZ)
+    return beijing_time.strftime("%Y-%m-%d %H:%M:%S")
 
 # 导入所有模型
 from app.models.user import User
@@ -54,6 +74,12 @@ class UserAdmin(ModelView, model=User):
         User.created_at: "注册时间",
     }
     
+    # 时间格式化为北京时间
+    column_formatters = {
+        User.created_at: format_datetime_beijing,
+        User.banned_until: format_datetime_beijing,
+    }
+    
     # 字段描述（表单中显示）
     form_args = {
         "username": {"description": "用户的显示名称"},
@@ -94,6 +120,11 @@ class PostAdmin(ModelView, model=Post):
         Post.created_at: "发布时间",
     }
     
+    # 时间格式化为北京时间
+    column_formatters = {
+        Post.created_at: format_datetime_beijing,
+    }
+    
     form_args = {
         "content": {"description": "动态的文字内容"},
         "media_type": {"description": "媒体类型：text=纯文本, image=图片, video=视频"},
@@ -124,6 +155,11 @@ class CommentAdmin(ModelView, model=Comment):
         Comment.created_at: "评论时间",
     }
     
+    # 时间格式化为北京时间
+    column_formatters = {
+        Comment.created_at: format_datetime_beijing,
+    }
+    
     can_create = False  # 评论只能通过前端创建
 
 
@@ -145,6 +181,11 @@ class NotificationAdmin(ModelView, model=Notification):
         Notification.post_id: "相关动态ID",
         Notification.is_read: "已读",
         Notification.created_at: "通知时间",
+    }
+    
+    # 时间格式化为北京时间
+    column_formatters = {
+        Notification.created_at: format_datetime_beijing,
     }
     
     can_create = False  # 通知由系统自动创建
@@ -176,6 +217,12 @@ class AdminUserAdmin(ModelView, model=AdminUser):
         AdminUser.is_active: "启用状态",
         AdminUser.last_login: "最后登录",
         AdminUser.created_at: "创建时间",
+    }
+    
+    # 时间格式化为北京时间
+    column_formatters = {
+        AdminUser.last_login: format_datetime_beijing,
+        AdminUser.created_at: format_datetime_beijing,
     }
     
     form_args = {
@@ -242,9 +289,10 @@ class SiteConfigAdmin(ModelView, model=SiteConfig):
         "description": {"description": "配置项的中文说明"},
     }
     
-    # 限制配置值列的显示，防止长文本撑开页面
+    # 限制配置值列的显示，防止长文本撑开页面 + 时间格式化
     column_formatters = {
         SiteConfig.value: lambda m, a: (m.value[:50] + "...") if m.value and len(m.value) > 50 else m.value,
+        SiteConfig.updated_at: format_datetime_beijing,
     }
 
 
@@ -296,10 +344,11 @@ class MediaAdmin(ModelView, model=Media):
         Media.created_at: "上传时间",
     }
     
-    # 添加图片预览和文件大小格式化
+    # 添加图片预览、文件大小格式化和时间格式化
     column_formatters = {
         "preview": format_media_preview,
         Media.file_size: format_file_size,
+        Media.created_at: format_datetime_beijing,
     }
     
     form_args = {
@@ -330,6 +379,11 @@ class AdminLogAdmin(ModelView, model=AdminLog):
         AdminLog.target_name: "目标",
         AdminLog.ip_address: "IP地址",
         AdminLog.created_at: "时间",
+    }
+    
+    # 时间格式化为北京时间
+    column_formatters = {
+        AdminLog.created_at: format_datetime_beijing,
     }
     
     can_create = False  # 日志只能由系统创建
