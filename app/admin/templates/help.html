@@ -1,0 +1,272 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fa-solid fa-circle-question"></i> 管理后台使用指南
+                    </h3>
+                </div>
+                <div class="card-body" style="max-height: 80vh; overflow-y: auto;">
+                    
+                    <!-- 快速开始 -->
+                    <div class="mb-4">
+                        <h4 class="text-primary"><i class="fa-solid fa-rocket"></i> 快速开始</h4>
+                        <table class="table table-bordered">
+                            <tr><td><strong>管理后台地址</strong></td><td><code>http://localhost:8000/admin</code></td></tr>
+                            <tr><td><strong>默认账户</strong></td><td><code>admin</code></td></tr>
+                            <tr><td><strong>默认密码</strong></td><td><code>Admin123</code></td></tr>
+                        </table>
+                        <p class="text-muted">创建新管理员：<code>python init_admin.py 用户名 密码</code></p>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- 功能模块 -->
+                    <div class="mb-4">
+                        <h4 class="text-primary"><i class="fa-solid fa-cubes"></i> 功能模块说明</h4>
+                        
+                        <div class="accordion" id="moduleAccordion">
+                            <!-- 用户管理 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#userModule">
+                                        <i class="fa-solid fa-user me-2"></i> 用户管理
+                                    </button>
+                                </h2>
+                                <div id="userModule" class="accordion-collapse collapse show" data-bs-parent="#moduleAccordion">
+                                    <div class="accordion-body">
+                                        <ul>
+                                            <li>查看、搜索所有注册用户</li>
+                                            <li>编辑用户信息</li>
+                                            <li><strong>封禁/解封用户</strong>：勾选「已封禁」，填写封禁原因</li>
+                                        </ul>
+                                        <div class="alert alert-info">
+                                            <strong>封禁操作：</strong>勾选「已封禁」→ 填写「封禁原因」→ 可选填「封禁截止时间」（留空=永久封禁）
+                                        </div>
+                                        <p class="text-muted">注意：用户只能通过前端注册，后台不能创建用户</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 动态管理 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#postModule">
+                                        <i class="fa-solid fa-newspaper me-2"></i> 动态管理
+                                    </button>
+                                </h2>
+                                <div id="postModule" class="accordion-collapse collapse" data-bs-parent="#moduleAccordion">
+                                    <div class="accordion-body">
+                                        <ul>
+                                            <li>查看、搜索所有动态</li>
+                                            <li>删除违规动态</li>
+                                            <li>查看动态的媒体类型和浏览量</li>
+                                        </ul>
+                                        <p class="text-muted">注意：动态只能通过前端发布，后台不能创建动态</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 网站配置 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#configModule">
+                                        <i class="fa-solid fa-cog me-2"></i> 网站配置 (V2.5)
+                                    </button>
+                                </h2>
+                                <div id="configModule" class="accordion-collapse collapse" data-bs-parent="#moduleAccordion">
+                                    <div class="accordion-body">
+                                        <div class="alert alert-warning">
+                                            <strong>⚠️ 重要：</strong>修改配置后，前端需要<strong>刷新页面</strong>才能看到变化！
+                                        </div>
+                                        
+                                        <h6>📷 图片链接从哪里来？</h6>
+                                        <div class="alert alert-success">
+                                            <strong>方式一（推荐）：</strong>先在前端发布动态上传图片 → 去「媒体库」找到图片 → 复制「文件路径」
+                                            <br><strong>方式二：</strong>直接填写外部图片URL，如 <code>https://example.com/logo.png</code>
+                                        </div>
+                                        
+                                        <h6 class="mt-3">🏷️ 品牌信息 (brand)</h6>
+                                        <table class="table table-sm table-bordered">
+                                            <tr><td><code>site_name</code></td><td>网站名称(英文)</td><td><code>LETAVERSE</code></td></tr>
+                                            <tr><td><code>site_name_cn</code></td><td>网站名称(中文)</td><td><code>莱塔宇宙</code></td></tr>
+                                            <tr><td><code>community_name</code></td><td>社区名称(英文)</td><td><code>Lightning Community</code></td></tr>
+                                            <tr><td><code>community_name_cn</code></td><td>社区名称(中文)</td><td><code>闪电社区</code></td></tr>
+                                            <tr><td><code>slogan</code></td><td>品牌标语(英文)</td><td>哲学性标语</td></tr>
+                                            <tr><td><code>slogan_cn</code></td><td>品牌标语(中文)</td><td>中文标语</td></tr>
+                                        </table>
+                                        
+                                        <h6 class="mt-3">🎨 视觉资源 (visual)</h6>
+                                        <table class="table table-sm table-bordered">
+                                            <tr><td><code>site_logo</code> 或 <code>logo</code></td><td>网站Logo</td><td>200x200px，PNG透明背景</td></tr>
+                                            <tr><td><code>site_favicon</code> 或 <code>favicon</code></td><td>浏览器图标</td><td>32x32px</td></tr>
+                                            <tr><td><code>site_background</code> 或 <code>background</code></td><td>全局背景图</td><td>1920x1080px</td></tr>
+                                            <tr><td><code>hero_background</code></td><td>首页Hero背景</td><td>1920x800px</td></tr>
+                                            <tr><td><code>ai_kanban</code></td><td>AI看板娘</td><td>透明PNG，高度400px</td></tr>
+                                            <tr><td><code>default_avatar</code></td><td>默认用户头像</td><td>200x200px</td></tr>
+                                        </table>
+                                        
+                                        <h6 class="mt-3">🤖 AI助手 (ai)</h6>
+                                        <table class="table table-sm table-bordered">
+                                            <tr><td><code>ai_name</code></td><td>AI名称(英文)</td><td><code>Mu AI</code></td></tr>
+                                            <tr><td><code>ai_name_cn</code></td><td>AI名称(中文)</td><td><code>穆爱</code></td></tr>
+                                            <tr><td><code>ai_title</code></td><td>AI头衔(英文)</td><td><code>Central Brain</code></td></tr>
+                                            <tr><td><code>ai_title_cn</code></td><td>AI头衔(中文)</td><td><code>中枢脑</code></td></tr>
+                                            <tr><td><code>ai_greeting</code></td><td>AI欢迎语(英文)</td><td><code>Hello~ I'm Mu ✨</code></td></tr>
+                                            <tr><td><code>ai_greeting_cn</code></td><td>AI欢迎语(中文)</td><td><code>你好呀～我是穆爱 ✨</code></td></tr>
+                                            <tr><td><code>ai_system_prompt</code></td><td>AI人设提示词</td><td>定义AI性格和风格</td></tr>
+                                        </table>
+                                        
+                                        <h6 class="mt-3">📝 首页内容 (content)</h6>
+                                        <table class="table table-sm table-bordered">
+                                            <tr><td><code>intro_en</code></td><td>首页理念介绍(英文)</td><td>英文介绍文案</td></tr>
+                                            <tr><td><code>intro_zh</code></td><td>首页理念介绍(中文)</td><td>中文介绍文案</td></tr>
+                                            <tr><td><code>world_background_en</code></td><td>世界观设定(英文)</td><td>英文世界观</td></tr>
+                                            <tr><td><code>world_background_zh</code></td><td>世界观设定(中文)</td><td>中文世界观</td></tr>
+                                        </table>
+                                        
+                                        <h6 class="mt-3">🔗 社交链接 (social)</h6>
+                                        <table class="table table-sm table-bordered">
+                                            <tr><td><code>social_instagram</code></td><td>Instagram链接</td><td><code>https://instagram.com/xxx</code></td></tr>
+                                            <tr><td><code>social_bilibili</code></td><td>哔哩哔哩链接</td><td><code>https://space.bilibili.com/xxx</code></td></tr>
+                                            <tr><td><code>social_twitter</code></td><td>Twitter/X链接</td><td><code>https://twitter.com/xxx</code></td></tr>
+                                            <tr><td><code>social_discord</code></td><td>Discord邀请链接</td><td><code>https://discord.gg/xxx</code></td></tr>
+                                            <tr><td><code>social_netease</code></td><td>网易云音乐链接</td><td><code>https://music.163.com/xxx</code></td></tr>
+                                        </table>
+                                        
+                                        <h6 class="mt-3">⚡ 功能开关 (features)</h6>
+                                        <table class="table table-sm table-bordered">
+                                            <tr><td><code>enable_ai_chat</code></td><td>启用AI聊天</td><td><code>true</code> 或 <code>false</code></td></tr>
+                                            <tr><td><code>enable_registration</code></td><td>允许注册</td><td><code>true</code> 或 <code>false</code></td></tr>
+                                            <tr><td><code>require_email_verify</code></td><td>要求邮箱验证</td><td><code>true</code> 或 <code>false</code></td></tr>
+                                        </table>
+                                        
+                                        <h6 class="mt-3">🏠 社区页面 (community) - V2.6.1 新增</h6>
+                                        <table class="table table-sm table-bordered">
+                                            <tr><td><code>community_status_text</code></td><td>状态栏文案</td><td><code>SYSTEM: L-CONVERTER ONLINE</code></td></tr>
+                                            <tr><td><code>community_version</code></td><td>版本号</td><td><code>V2.0.45 BETA</code></td></tr>
+                                            <tr><td><code>create_post_text</code></td><td>发帖按钮(英文)</td><td><code>Create Post</code></td></tr>
+                                            <tr><td><code>create_post_text_cn</code></td><td>发帖按钮(中文)</td><td><code>上传记忆碎片</code></td></tr>
+                                        </table>
+                                        
+                                        <div class="alert alert-info mt-3">
+                                            <strong>💡 提示：</strong>配置项支持两种命名格式，如 <code>site_logo</code> 和 <code>logo</code> 都可以使用
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 媒体库 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mediaModule">
+                                        <i class="fa-solid fa-images me-2"></i> 媒体库 (V2.5 新增预览)
+                                    </button>
+                                </h2>
+                                <div id="mediaModule" class="accordion-collapse collapse" data-bs-parent="#moduleAccordion">
+                                    <div class="accordion-body">
+                                        <ul>
+                                            <li>查看所有上传的图片和视频</li>
+                                            <li><strong>图片预览</strong>：列表中直接显示缩略图，点击可查看大图</li>
+                                            <li><strong>获取图片路径</strong>：点击查看详情，复制「文件路径」字段</li>
+                                            <li><strong>文件大小</strong>：自动格式化为 KB/MB 等可读格式</li>
+                                        </ul>
+                                        <div class="alert alert-warning">
+                                            <strong>提示：</strong>配置网站Logo等图片时，先在这里找到图片，复制路径填入配置
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 管理员管理 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#adminModule">
+                                        <i class="fa-solid fa-user-shield me-2"></i> 管理员管理
+                                    </button>
+                                </h2>
+                                <div id="adminModule" class="accordion-collapse collapse" data-bs-parent="#moduleAccordion">
+                                    <div class="accordion-body">
+                                        <ul>
+                                            <li>查看、创建管理员</li>
+                                            <li>修改管理员角色</li>
+                                            <li>禁用/启用管理员</li>
+                                        </ul>
+                                        <h6>角色说明</h6>
+                                        <table class="table table-sm table-bordered">
+                                            <tr><td><code>super_admin</code></td><td>超级管理员</td><td>所有权限，可管理其他管理员</td></tr>
+                                            <tr><td><code>operator</code></td><td>运营人员</td><td>基础权限，不能管理管理员</td></tr>
+                                        </table>
+                                        <p class="text-muted">注意：只有超级管理员可以访问此功能</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- 常见问题 -->
+                    <div class="mb-4">
+                        <h4 class="text-primary"><i class="fa-solid fa-question-circle"></i> 常见问题</h4>
+                        
+                        <div class="mb-3">
+                            <strong>Q: 忘记管理员密码怎么办？</strong>
+                            <p class="text-muted mb-0">A: 让其他超级管理员在「管理员管理」中编辑你的账号，重新设置密码</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Q: 如何修改网站Logo？</strong>
+                            <p class="text-muted mb-0">A: 在「网站配置」中找到 <code>site_logo</code>，填入图片URL</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Q: 配置修改后前端没更新？</strong>
+                            <p class="text-muted mb-0">A: 前端需要刷新页面重新获取配置</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong>Q: 如何添加社交链接？</strong>
+                            <p class="text-muted mb-0">A: 在 <code>social_links</code> 填入JSON：<code>[{"name": "GitHub", "url": "https://github.com/xxx", "icon": "github"}]</code></p>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- 邮件配置 -->
+                    <div class="mb-4">
+                        <h4 class="text-primary"><i class="fa-solid fa-envelope"></i> 邮件服务配置 (V2.6.2)</h4>
+                        <p>在「网站配置」中搜索 <code>email</code> 分类，配置以下项目：</p>
+                        
+                        <table class="table table-sm table-bordered">
+                            <tr><td><code>smtp_host</code></td><td>SMTP服务器地址</td><td><code>smtp.qq.com</code></td></tr>
+                            <tr><td><code>smtp_port</code></td><td>SMTP端口</td><td><code>587</code> (TLS) 或 <code>465</code> (SSL)</td></tr>
+                            <tr><td><code>smtp_user</code></td><td>登录用户名</td><td>通常是邮箱地址</td></tr>
+                            <tr><td><code>smtp_password</code></td><td>密码/授权码</td><td>QQ邮箱需要授权码</td></tr>
+                            <tr><td><code>from_email</code></td><td>发件人邮箱</td><td>与smtp_user相同</td></tr>
+                            <tr><td><code>frontend_url</code></td><td>前端网站地址</td><td><code>http://localhost:5173</code></td></tr>
+                        </table>
+                        
+                        <div class="alert alert-info">
+                            <strong>💡 QQ邮箱授权码获取方法：</strong><br>
+                            登录QQ邮箱 → 设置 → 账户 → 找到「POP3/IMAP/SMTP服务」→ 开启SMTP服务 → 发短信获取授权码
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <strong>⚠️ 注意：</strong>配置修改后立即生效，无需重启服务器
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="card-footer text-muted">
+                    <small>版本 V2.6.2 | 更新日期 2025-12-14</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,229 @@
+# 实现计划：后端功能完善
+
+## 任务列表
+
+- [x] 1. 数据库模型和迁移准备
+  - [x] 1.1 安装 Alembic 并初始化迁移环境
+    - 添加 alembic 到 requirements.txt
+    - 运行 alembic init 创建迁移目录
+    - 配置 alembic.ini 和 env.py
+    - _需求: 9.1, 9.2_
+  - [x] 1.2 修改 User 模型添加 is_verified 字段
+    - 在 app/models/user.py 添加 is_verified: bool = Field(default=False)
+    - 生成迁移脚本
+    - _需求: 1.2_
+  - [x] 1.3 创建 VerificationCode 模型
+    - 创建 app/models/verification.py
+    - 定义 VerificationType 枚举和 VerificationCode 模型
+    - _需求: 1.1, 2.1_
+  - [x] 1.4 创建 RefreshToken 模型
+    - 创建 app/models/refresh_token.py
+    - 定义 RefreshToken 模型
+    - _需求: 4.1_
+  - [x] 1.5 创建 Follow 模型
+    - 创建 app/models/follow.py
+    - 定义 Follow 模型和唯一约束
+    - _需求: 5.1_
+  - [x] 1.6 更新 models/__init__.py 导出所有模型
+    - 导入新模型确保表创建
+    - _需求: 9.1_
+
+- [x] 2. 密码强度验证
+  - [x] 2.1 创建密码验证工具函数
+    - 创建 app/utils/validators.py
+    - 实现 validate_password 函数
+    - _需求: 3.1, 3.2_
+  - [ ]* 2.2 编写密码验证属性测试
+    - **属性 1: 密码强度验证**
+    - **验证: 需求 3.1, 3.2**
+  - [x] 2.3 更新注册接口使用密码验证
+    - 修改 app/api/v1/auth.py 的 register 函数
+    - 在创建用户前验证密码强度
+    - _需求: 3.1, 3.2, 3.3_
+
+- [x] 3. Token 刷新机制
+  - [x] 3.1 增强 security.py 添加 Token 管理函数
+    - 实现 create_tokens 返回双 Token
+    - 实现 create_refresh_token 生成并存储 Refresh Token
+    - 实现 verify_refresh_token 验证 Refresh Token
+    - 实现 revoke_user_tokens 撤销用户所有 Token
+    - _需求: 4.1, 4.2, 4.3_
+  - [ ]* 3.2 编写 Token 管理属性测试
+    - **属性 6: 登录返回双 Token**
+    - **属性 7: Refresh Token 轮换**
+    - **验证: 需求 4.1, 4.3**
+  - [x] 3.3 修改登录接口返回双 Token
+    - 修改 app/api/v1/auth.py 的 login 函数
+    - 调用 create_tokens 并存储 Refresh Token
+    - _需求: 4.1_
+  - [x] 3.4 添加 Token 刷新接口
+    - 添加 POST /auth/refresh 端点
+    - 验证 Refresh Token，生成新的双 Token
+    - 撤销旧 Refresh Token
+    - _需求: 4.2, 4.3, 4.4_
+  - [x] 3.5 添加登出接口
+    - 添加 POST /auth/logout 端点
+    - 撤销当前 Refresh Token
+    - _需求: 4.5_
+  - [ ]* 3.6 编写登出属性测试
+    - **属性 8: 登出 Token 失效**
+    - **验证: 需求 4.5**
+
+- [x] 4. 检查点 - 确保所有测试通过
+  - 确保所有测试通过，如有问题请询问用户
+
+- [x] 5. 邮件服务
+  - [x] 5.1 添加邮件配置到 config.py
+    - 添加 SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, FROM_EMAIL
+    - 添加 FRONTEND_URL 配置
+    - _需求: 1.1, 2.1_
+  - [x] 5.2 创建邮件服务模块
+    - 创建 app/services/email_service.py
+    - 实现 EmailService 类
+    - 实现 send_verification_email 方法
+    - 实现 send_password_reset_email 方法
+    - _需求: 1.1, 2.1_
+  - [x] 5.3 创建验证码服务
+    - 创建 app/services/verification_service.py
+    - 实现 create_verification_code 函数
+    - 实现 verify_code 函数
+    - _需求: 1.1, 1.2, 1.3_
+  - [ ]* 5.4 编写验证码属性测试
+    - **属性 2: 验证码唯一性**
+    - **属性 3: 验证码过期检查**
+    - **验证: 需求 1.1, 1.3, 2.1, 2.3**
+
+- [x] 6. 邮箱验证功能
+  - [x] 6.1 修改注册接口发送验证邮件
+    - 注册成功后创建验证码
+    - 调用邮件服务发送验证邮件
+    - _需求: 1.1_
+  - [x] 6.2 添加邮箱验证接口
+    - 添加 POST /auth/verify-email 端点
+    - 验证验证码并更新用户 is_verified 状态
+    - _需求: 1.2, 1.3_
+  - [ ]* 6.3 编写邮箱验证属性测试
+    - **属性 4: 邮箱验证状态更新**
+    - **验证: 需求 1.2**
+  - [x] 6.4 添加重发验证邮件接口
+    - 添加 POST /auth/resend-verify 端点
+    - 生成新验证码并发送
+    - _需求: 1.5_
+  - [x] 6.5 修改登录接口返回验证状态
+    - 在登录响应中添加 is_verified 字段
+    - _需求: 1.4_
+
+- [x] 7. 密码重置功能
+  - [x] 7.1 添加忘记密码接口
+    - 添加 POST /auth/forgot-password 端点
+    - 创建密码重置验证码
+    - 发送重置邮件
+    - _需求: 2.1_
+  - [x] 7.2 添加密码重置接口
+    - 添加 POST /auth/reset-password 端点
+    - 验证重置码
+    - 验证新密码强度
+    - 更新密码哈希
+    - 撤销用户所有 Token
+    - _需求: 2.3, 2.4, 2.5_
+  - [ ]* 7.3 编写密码重置属性测试
+    - **属性 5: 密码重置后 Token 失效**
+    - **验证: 需求 2.5**
+
+- [x] 8. 检查点 - 确保所有测试通过
+  - 确保所有测试通过，如有问题请询问用户
+
+- [x] 9. 关注系统
+  - [x] 9.1 创建关注相关 Schema
+    - 创建 app/schemas/follow.py
+    - 定义 FollowResponse, UserWithFollowInfo 等
+    - _需求: 5.1_
+  - [x] 9.2 创建用户路由模块
+    - 创建 app/api/v1/users.py
+    - 在 main.py 注册路由
+    - _需求: 5.1_
+  - [x] 9.3 实现关注接口
+    - 添加 POST /users/{user_id}/follow 端点
+    - 检查不能关注自己
+    - 创建关注关系
+    - 创建通知
+    - _需求: 5.1, 5.6_
+  - [ ]* 9.4 编写关注属性测试
+    - **属性 9: 关注关系创建**
+    - **属性 12: 禁止自关注**
+    - **验证: 需求 5.1, 5.6**
+  - [x] 9.5 实现取消关注接口
+    - 添加 DELETE /users/{user_id}/follow 端点
+    - 删除关注关系
+    - _需求: 5.2_
+  - [ ]* 9.6 编写取消关注属性测试
+    - **属性 10: 取消关注删除关系**
+    - **验证: 需求 5.2**
+  - [x] 9.7 实现关注列表接口
+    - 添加 GET /users/{user_id}/following 端点
+    - 返回分页的关注用户列表
+    - _需求: 5.4_
+  - [x] 9.8 实现粉丝列表接口
+    - 添加 GET /users/{user_id}/followers 端点
+    - 返回分页的粉丝用户列表
+    - _需求: 5.5_
+
+- [x] 10. 用户个人主页
+  - [x] 10.1 实现用户主页接口
+    - 添加 GET /users/{user_id} 端点
+    - 返回用户信息、动态数、关注数、粉丝数
+    - 如果已登录，返回是否已关注
+    - _需求: 8.1, 8.3, 8.4_
+  - [ ]* 10.2 编写个人主页属性测试
+    - **属性 11: 关注计数准确性**
+    - **属性 16: 个人主页字段完整**
+    - **验证: 需求 5.3, 8.1**
+  - [x] 10.3 实现用户动态列表接口
+    - 添加 GET /users/{user_id}/posts 端点
+    - 返回该用户的动态列表
+    - _需求: 8.2_
+
+- [x] 11. 头像上传
+  - [x] 11.1 实现头像上传接口
+    - 添加 POST /auth/me/avatar 端点
+    - 验证文件类型 (JPEG, PNG, WebP)
+    - 验证文件大小 (最大 2MB)
+    - 保存文件并更新用户头像 URL
+    - 删除旧头像文件
+    - _需求: 6.1, 6.2, 6.3, 6.4_
+  - [ ]* 11.2 编写头像上传属性测试
+    - **属性 13: 头像文件类型验证**
+    - **属性 14: 头像文件大小验证**
+    - **验证: 需求 6.1, 6.2**
+
+- [x] 12. Bug 修复 - Gallery 分页
+  - [x] 12.1 修复 Gallery 分页总数计算
+    - 修改 app/api/v1/gallery.py
+    - 使用 func.count 查询真实总数
+    - 返回正确的分页信息
+    - _需求: 7.1, 7.2_
+  - [x] 12.2 修复 Gallery 错误响应
+    - 分类不存在时返回 APIException(404)
+    - _需求: 7.3_
+  - [ ]* 12.3 编写 Gallery 分页属性测试
+    - **属性 15: Gallery 分页总数准确**
+    - **验证: 需求 7.1**
+
+- [x] 13. 更新文档和配置
+  - [x] 13.1 更新 .env.example
+    - 添加邮件服务配置示例
+    - 添加 FRONTEND_URL 配置
+    - _需求: 5.1_
+  - [x] 13.2 更新 requirements.txt
+    - 添加 alembic
+    - 添加 aiosmtplib (异步邮件发送)
+    - _需求: 9.1_
+  - [x] 13.3 更新 README.md
+    - 添加新功能说明
+    - 添加邮件配置说明
+    - _需求: 文档_
+
+- [x] 14. 最终检查点 - 确保所有测试通过
+  - ✅ 所有 28 个测试全部通过 (2025-12-13)
+  - 修复了缺失的依赖 (aiosmtplib)
+  - 修复了数据库缺失的列 (posts.view_count, posts.updated_at)
