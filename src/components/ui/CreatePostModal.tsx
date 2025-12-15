@@ -78,14 +78,65 @@ const CreatePostModal = ({ isOpen, onClose, onSuccess }: CreatePostModalProps) =
         }
     });
 
+    // 允许的文件类型
+    const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
+    const ALLOWED_TYPES = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_VIDEO_TYPES];
+
+    const isAllowedFile = (file: File): boolean => {
+        return ALLOWED_TYPES.includes(file.type);
+    };
+
+    const isVideoFile = (file: File): boolean => {
+        return ALLOWED_VIDEO_TYPES.includes(file.type);
+    };
+
     const handleImageSelect = (files: FileList | null) => {
         if (!files) return;
         const fileArray = Array.from(files);
-        setSelectedImages(prev => [...prev, ...fileArray]);
+        
+        // 过滤不允许的文件类型
+        const validFiles: File[] = [];
+        const invalidFiles: File[] = [];
+        
         fileArray.forEach(file => {
-            const reader = new FileReader();
-            reader.onloadend = () => setPreviewUrls(prev => [...prev, reader.result as string]);
-            reader.readAsDataURL(file);
+            if (isAllowedFile(file)) {
+                validFiles.push(file);
+            } else {
+                invalidFiles.push(file);
+            }
+        });
+
+        // 如果有不允许的文件，显示错误提示
+        if (invalidFiles.length > 0) {
+            toast.error('只支持上传图片和视频文件', {
+                style: {
+                    background: 'rgba(10, 10, 20, 0.95)',
+                    color: '#ff4444',
+                    border: '1px solid rgba(255, 68, 68, 0.3)',
+                },
+                iconTheme: {
+                    primary: '#ff4444',
+                    secondary: '#0a0a14',
+                },
+            });
+        }
+
+        // 只处理有效的文件
+        if (validFiles.length === 0) return;
+
+        setSelectedImages(prev => [...prev, ...validFiles]);
+        validFiles.forEach(file => {
+            if (isVideoFile(file)) {
+                // 视频文件使用 URL.createObjectURL 生成预览
+                const videoUrl = URL.createObjectURL(file);
+                setPreviewUrls(prev => [...prev, videoUrl]);
+            } else {
+                // 图片文件使用 FileReader
+                const reader = new FileReader();
+                reader.onloadend = () => setPreviewUrls(prev => [...prev, reader.result as string]);
+                reader.readAsDataURL(file);
+            }
         });
     };
 
@@ -204,7 +255,7 @@ const CreatePostModal = ({ isOpen, onClose, onSuccess }: CreatePostModalProps) =
                                     <input
                                         type="file"
                                         multiple
-                                        accept="image/*"
+                                        accept="image/*,video/*"
                                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                         onChange={(e) => handleImageSelect(e.target.files)}
                                     />
@@ -215,29 +266,44 @@ const CreatePostModal = ({ isOpen, onClose, onSuccess }: CreatePostModalProps) =
                                         拖拽文件到这里 / DRAG FILES HERE
                                     </p>
                                     <p className="text-xs text-gray-500 font-mono">
-                                        Supported Formats: JPG, PNG, WEBP
+                                        支持格式: JPG, PNG, WEBP, GIF, MP4, WEBM
                                     </p>
                                 </div>
 
                                 {/* Preview Grid */}
                                 {previewUrls.length > 0 && (
                                     <div className="grid grid-cols-4 gap-4 mt-4">
-                                        {previewUrls.map((url, i) => (
-                                            <div key={i} className="relative group aspect-square">
-                                                <img src={url} alt="" className="w-full h-full object-cover border border-white/20" />
-                                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                    <button
-                                                        onClick={() => removeImage(i)}
-                                                        className="text-red-500 hover:text-white"
-                                                    >
-                                                        <X className="w-6 h-6" />
-                                                    </button>
+                                        {previewUrls.map((url, i) => {
+                                            const file = selectedImages[i];
+                                            const isVideo = file && isVideoFile(file);
+                                            return (
+                                                <div key={i} className="relative group aspect-square">
+                                                    {isVideo ? (
+                                                        <video 
+                                                            src={url} 
+                                                            className="w-full h-full object-cover border border-white/20"
+                                                            muted
+                                                        />
+                                                    ) : (
+                                                        <img src={url} alt="" className="w-full h-full object-cover border border-white/20" />
+                                                    )}
+                                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                        <button
+                                                            onClick={() => removeImage(i)}
+                                                            className="text-red-500 hover:text-white"
+                                                        >
+                                                            <X className="w-6 h-6" />
+                                                        </button>
+                                                    </div>
+                                                    <div className={cn(
+                                                        "absolute top-0 left-0 text-black text-[10px] font-bold px-1 font-mono",
+                                                        isVideo ? "bg-neon-purple" : "bg-cyber-cyan"
+                                                    )}>
+                                                        {isVideo ? `VID_${i + 1}` : `IMG_${i + 1}`}
+                                                    </div>
                                                 </div>
-                                                <div className="absolute top-0 left-0 bg-cyber-cyan text-black text-[10px] font-bold px-1 font-mono">
-                                                    IMG_{i + 1}
-                                                </div>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 )}
                             </div>

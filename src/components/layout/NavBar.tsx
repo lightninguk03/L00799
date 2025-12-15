@@ -140,7 +140,7 @@ const NavBar = () => {
 
 
       {/* Mobile Bottom Tab Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 block md:hidden bg-[#0a0a12]/90 backdrop-blur-xl border-t border-white/10 pb-4 pt-2">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 block md:hidden bg-[#0a0a12]/90 backdrop-blur-xl border-t border-white/10 pb-safe pt-2" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
         <div className="flex justify-around items-center h-14 relative">
           {navItems.map((item) => (
             <Link

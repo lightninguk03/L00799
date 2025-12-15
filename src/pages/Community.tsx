@@ -246,7 +246,7 @@ const Community = () => {
 
       {/* 右下角发帖按钮 - 能量核心风格 */}
       {!isPostModalOpen && (
-      <div className="fixed right-4 md:right-8 bottom-24 z-[99999]">
+      <div className="fixed right-4 md:right-8 bottom-28 md:bottom-24 z-[99999]">
         <div className="relative group">
           {/* 能量场波纹 - 最外层 */}
           <div className="absolute inset-[-20px] rounded-full border border-neon-purple/20 energy-field-ripple pointer-events-none" />

@@ -15,9 +15,11 @@ import { useTranslation } from 'react-i18next';
 import { getAvatarUrl } from '../lib/utils';
 import type { UserResponse, PostResponse, PaginatedResponse } from '../api';
 
-interface FollowStats {
+// 用户主页返回的数据结构
+interface UserProfileData extends UserResponse {
+  post_count: number;
   following_count: number;
-  followers_count: number;
+  follower_count: number;
   is_following: boolean;
 }
 
@@ -36,21 +38,11 @@ const UserProfile = () => {
     },
   });
 
-  // 获取目标用户信息
-  const { data: user, isLoading } = useQuery<UserResponse>({
+  // 获取目标用户信息（包含关注状态和统计）
+  const { data: user, isLoading, refetch: refetchUser } = useQuery<UserProfileData>({
     queryKey: ['user', userId],
     queryFn: async () => {
       const res = await api.get(`/users/${userId}`);
-      return res.data;
-    },
-    enabled: !!userId,
-  });
-
-  // 获取关注状态和统计
-  const { data: followStats } = useQuery<FollowStats>({
-    queryKey: ['followStats', userId],
-    queryFn: async () => {
-      const res = await api.get(`/users/${userId}/follow-stats`);
       return res.data;
     },
     enabled: !!userId,
@@ -69,14 +61,16 @@ const UserProfile = () => {
   // 关注/取消关注
   const followMutation = useMutation({
     mutationFn: async () => {
-      if (followStats?.is_following) {
+      if (user?.is_following) {
         await api.delete(`/users/${userId}/follow`);
       } else {
         await api.post(`/users/${userId}/follow`);
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['followStats', userId] });
+      // 刷新用户数据以获取最新的关注状态
+      refetchUser();
+      queryClient.invalidateQueries({ queryKey: ['user', userId] });
     },
   });
 
@@ -137,16 +131,26 @@ const UserProfile = () => {
 
             {/* 关注统计 */}
             <div className="flex items-center gap-6 text-sm">
-              <button className="flex items-center gap-2 text-gray-400 hover:text-cyber-cyan transition-colors">
+              <button 
+                onClick={() => navigate(`/user/${userId}/following`)}
+                className="flex items-center gap-2 text-gray-400 hover:text-cyber-cyan transition-colors"
+              >
                 <UserPlus className="w-4 h-4" />
-                <span className="font-orbitron">{followStats?.following_count || 0}</span>
+                <span className="font-orbitron">{user?.following_count || 0}</span>
                 <span>{t('profile.following')}</span>
               </button>
-              <button className="flex items-center gap-2 text-gray-400 hover:text-neon-purple transition-colors">
+              <button 
+                onClick={() => navigate(`/user/${userId}/followers`)}
+                className="flex items-center gap-2 text-gray-400 hover:text-neon-purple transition-colors"
+              >
                 <Users className="w-4 h-4" />
-                <span className="font-orbitron">{followStats?.followers_count || 0}</span>
+                <span className="font-orbitron">{user?.follower_count || 0}</span>
                 <span>{t('profile.followers')}</span>
               </button>
+              <div className="flex items-center gap-2 text-gray-400">
+                <span className="font-orbitron">{user?.post_count || 0}</span>
+                <span>{t('profile.posts')}</span>
+              </div>
             </div>
           </div>
 
@@ -154,12 +158,12 @@ const UserProfile = () => {
           {!isOwnProfile && currentUser && (
             <div className="flex-shrink-0">
               <NeonButton
-                variant={followStats?.is_following ? 'outline' : 'primary'}
+                variant={user?.is_following ? 'outline' : 'primary'}
                 onClick={() => followMutation.mutate()}
                 disabled={followMutation.isPending}
                 className="min-w-[100px]"
               >
-                {followStats?.is_following ? (
+                {user?.is_following ? (
                   <>
                     <UserMinus className="w-4 h-4 mr-2" />
                     {t('user.unfollow')}

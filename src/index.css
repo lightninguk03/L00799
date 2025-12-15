@@ -537,3 +537,113 @@ body {
 .energy-field-ripple {
   animation: energyFieldRipple 2s ease-out infinite;
 }
+
+
+/* ========== 移动端适配优化 ========== */
+
+/* iOS 安全区域支持 */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* 移动端触摸优化 */
+@media (max-width: 768px) {
+  /* 增大触摸目标 */
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* 禁用移动端双击缩放 */
+  * {
+    touch-action: manipulation;
+  }
+  
+  /* 移动端字体大小优化 */
+  .font-orbitron {
+    letter-spacing: 0.05em;
+  }
+  
+  /* 移动端卡片间距优化 */
+  .card-scan {
+    margin-bottom: 1rem;
+  }
+  
+  /* 移动端模态框优化 */
+  .modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  /* 移动端输入框优化 - 防止缩放 */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+  
+  /* 移动端滚动优化 */
+  .overflow-y-auto, .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* 小屏幕设备优化 (< 375px) */
+@media (max-width: 375px) {
+  .text-4xl {
+    font-size: 1.75rem;
+  }
+  
+  .text-3xl {
+    font-size: 1.5rem;
+  }
+  
+  .text-2xl {
+    font-size: 1.25rem;
+  }
+  
+  .p-8 {
+    padding: 1.5rem;
+  }
+  
+  .p-6 {
+    padding: 1rem;
+  }
+}
+
+/* 横屏模式优化 */
+@media (max-height: 500px) and (orientation: landscape) {
+  .min-h-screen {
+    min-height: 100vh;
+  }
+  
+  /* 横屏时隐藏部分装饰元素 */
+  .particle {
+    display: none;
+  }
+}
+
+/* 暗色模式滚动条 - 移动端隐藏 */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* 移动端底部导航安全区域 */
+.bottom-nav-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+/* 移动端悬浮按钮位置调整 */
+@media (max-width: 768px) {
+  .floating-btn-mobile {
+    bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+  }
+}

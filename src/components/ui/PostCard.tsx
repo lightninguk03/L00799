@@ -150,7 +150,14 @@ const PostCard = ({ post, showActions = true, currentUserId }: PostCardProps) =>
                 {/* Content */}
                 <div className={cn("px-3 pb-3", imageUrl ? "pt-4" : "pt-8")}>
                     <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center space-x-2">
+                        <div 
+                            className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                window.location.href = `/user/${post.user_id}`;
+                            }}
+                        >
                             {/* User Avatar */}
                             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-neon-purple to-cyber-cyan p-[1px] flex-shrink-0">
                                 <div className="w-full h-full rounded-full bg-[#050510] overflow-hidden flex items-center justify-center">
@@ -166,7 +173,7 @@ const PostCard = ({ post, showActions = true, currentUserId }: PostCardProps) =>
                                 </div>
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-xs text-cyber-cyan font-orbitron tracking-wide">
+                                <span className="text-xs text-cyber-cyan font-orbitron tracking-wide hover:text-white transition-colors">
                                     {post.user?.username || `USER-${post.user_id}`}
                                 </span>
                                 <span className="text-[10px] text-gray-500">{new Date(post.created_at).toLocaleDateString()}</span>
