@@ -8,9 +8,10 @@
 
 import { describe, it, expect } from 'vitest';
 import * as fc from 'fast-check';
-import { defaultSiteConfig, type SiteConfig } from '../../config/site.config';
+import { defaultSiteConfig } from '../../config/site.config';
 
 // Arbitrary for generating valid SiteConfig objects
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const siteConfigArbitrary = fc.record({
   siteName: fc.string({ minLength: 1, maxLength: 50 }),
   siteNameCn: fc.string({ minLength: 1, maxLength: 50 }),

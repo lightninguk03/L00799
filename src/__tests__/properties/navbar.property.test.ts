@@ -7,23 +7,10 @@
 import { describe, it, expect } from 'vitest';
 import * as fc from 'fast-check';
 
-// Simulate NavBar positioning
-interface NavBarState {
-  scrollY: number;
-  isFixed: boolean;
-}
-
 // NavBar should always be fixed
 const getNavBarPosition = (): 'fixed' | 'relative' => {
   return 'fixed';
 };
-
-// Simulate active menu item styling
-interface MenuItemState {
-  path: string;
-  currentPath: string;
-  isActive: boolean;
-}
 
 const isMenuItemActive = (itemPath: string, currentPath: string): boolean => {
   return itemPath === currentPath;
@@ -45,7 +32,7 @@ describe('Property 10: 导航栏固定定位', () => {
     fc.assert(
       fc.property(
         fc.integer({ min: 0, max: 10000 }), // Any scroll position
-        (scrollY) => {
+        (_scrollY) => {
           const position = getNavBarPosition();
           expect(position).toBe('fixed');
           return true;

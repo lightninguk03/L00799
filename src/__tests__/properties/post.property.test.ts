@@ -9,16 +9,19 @@ import * as fc from 'fast-check';
 
 // Mock QueryClient behavior
 interface MockQueryClient {
-  invalidateQueries: ReturnType<typeof vi.fn>;
+  invalidateQueries: (options: { queryKey: string[] }) => void;
   lastInvalidatedKey: string[] | null;
 }
 
-const createMockQueryClient = (): MockQueryClient => ({
-  invalidateQueries: vi.fn(({ queryKey }) => {
-    mockQueryClient.lastInvalidatedKey = queryKey;
-  }),
-  lastInvalidatedKey: null,
-});
+const createMockQueryClient = (): MockQueryClient => {
+  const client: MockQueryClient = {
+    invalidateQueries: vi.fn(({ queryKey }: { queryKey: string[] }) => {
+      client.lastInvalidatedKey = queryKey;
+    }),
+    lastInvalidatedKey: null,
+  };
+  return client;
+};
 
 let mockQueryClient: MockQueryClient;
 
@@ -37,7 +40,7 @@ const createPostModalState = (initialContent: string = ''): PostModalState => ({
 
 // Simulate successful post creation
 const simulateSuccessfulPost = (
-  state: PostModalState,
+  _state: PostModalState,
   queryClient: MockQueryClient,
   onSuccess?: () => void
 ): PostModalState => {

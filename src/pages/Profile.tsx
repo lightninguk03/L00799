@@ -3,9 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import CyberCard from '../components/ui/CyberCard';
-import NeonButton from '../components/ui/NeonButton';
 import EditProfileModal from '../components/ui/EditProfileModal';
-import { User, Settings, Activity, Grid, Bell, Users, UserPlus } from 'lucide-react';
+import { User, Settings, Activity, Grid, Bell } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { getAvatarUrl } from '../lib/utils';
 

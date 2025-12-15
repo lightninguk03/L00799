@@ -28,7 +28,7 @@ const PostCard = ({ post, showActions = true, currentUserId }: PostCardProps) =>
     const [showMenu, setShowMenu] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
-    const [_showRepostModal, _setShowRepostModal] = useState(false); // 暂时保留，未来可能启用
+    // const [showRepostModal, setShowRepostModal] = useState(false); // 暂时保留，未来可能启用
     const [showReportModal, setShowReportModal] = useState(false);
 
     // 判断是否是自己的帖子

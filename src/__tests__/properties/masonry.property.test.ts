@@ -22,7 +22,7 @@ const getColumnCount = (viewportWidth: number): number => {
 };
 
 // Get expected CSS classes for a viewport width
-const getMasonryClasses = (viewportWidth: number): string[] => {
+const getMasonryClasses = (): string[] => {
   const classes = ['columns-1', 'sm:columns-2', 'lg:columns-3', 'xl:columns-4'];
   return classes;
 };
@@ -85,7 +85,7 @@ describe('Property 7: 瀑布流列数响应式', () => {
   });
 
   it('MasonryGrid should have all responsive column classes', () => {
-    const classes = getMasonryClasses(1920);
+    const classes = getMasonryClasses();
     
     expect(classes).toContain('columns-1');
     expect(classes).toContain('sm:columns-2');

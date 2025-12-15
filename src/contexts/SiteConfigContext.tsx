@@ -85,7 +85,7 @@ export const SiteConfigProvider: React.FC<SiteConfigProviderProps> = ({
           _backendConfig: b,
         }));
       }
-    } catch (err) {
+    } catch {
       // API 加载失败时使用默认配置，不显示错误
       console.log('Using default site config');
     } finally {

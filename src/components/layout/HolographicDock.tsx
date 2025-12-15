@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, User, Sparkles, LogIn, LogOut, Bot, Settings, Terminal } from 'lucide-react';
+import { Home, User, Sparkles, LogIn, LogOut, Bot } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -8,8 +8,8 @@ import { authApi } from '../../api';
 
 // Dock Item Component with Magnification Logic
 interface DockItemProps {
-    mouseX: any;
-    item: any;
+    mouseX: ReturnType<typeof useMotionValue<number>>;
+    item: { name: string; path: string; icon: React.ComponentType<{ className?: string }> };
     isActive: boolean;
     onClick?: () => void;
 }

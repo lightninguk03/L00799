@@ -9,7 +9,7 @@ interface NeonButtonProps extends HTMLMotionProps<"button"> {
 }
 
 const NeonButton = React.forwardRef<HTMLButtonElement, NeonButtonProps>(
-    ({ className, variant = 'primary', size = 'md', glow = true, children, ...props }, ref) => {
+    ({ className, variant = 'primary', size = 'md', children, ...props }, ref) => {
 
         const sizes = {
             sm: "px-4 py-1 text-xs",
