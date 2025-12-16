@@ -1,4 +1,5 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../api';
 import { X, Upload } from 'lucide-react';
@@ -19,6 +20,25 @@ const CreatePostModal = ({ isOpen, onClose, onSuccess }: CreatePostModalProps) =
     const [previewUrls, setPreviewUrls] = useState<string[]>([]);
     const [isDragging, setIsDragging] = useState(false);
     const dropRef = useRef<HTMLDivElement>(null);
+    const modalRef = useRef<HTMLDivElement>(null);
+
+    // 模态框打开时滚动到顶部并禁止背景滚动
+    useEffect(() => {
+        if (isOpen) {
+            // 禁止背景滚动
+            document.body.style.overflow = 'hidden';
+            // 滚动模态框内容到顶部
+            if (modalRef.current) {
+                modalRef.current.scrollTop = 0;
+            }
+        } else {
+            // 恢复背景滚动
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [isOpen]);
 
     // 重置表单状态（仅在成功发布后调用）
     const resetForm = () => {
@@ -46,6 +66,9 @@ const CreatePostModal = ({ isOpen, onClose, onSuccess }: CreatePostModalProps) =
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['posts'] });
+            queryClient.invalidateQueries({ queryKey: ['userPosts'] });
+            queryClient.invalidateQueries({ queryKey: ['myPostsPreview'] });
+            queryClient.invalidateQueries({ queryKey: ['userStats'] });
             // 显示成功提示（世界观术语）
             toast.success('记忆碎片已上传', {
                 style: {
@@ -171,10 +194,12 @@ const CreatePostModal = ({ isOpen, onClose, onSuccess }: CreatePostModalProps) =
         }
     };
 
-    return (
+    return createPortal(
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                <div 
+                    className="fixed inset-0 z-[99999] flex items-center justify-center p-4"
+                >
                     {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}
@@ -186,12 +211,13 @@ const CreatePostModal = ({ isOpen, onClose, onSuccess }: CreatePostModalProps) =
 
                     {/* Modal Container - New Transmission Protocol Style with 3D Perspective */}
                     <motion.div
+                        ref={modalRef}
                         initial={{ scale: 0.8, opacity: 0, rotateX: 15, y: 50 }}
                         animate={{ scale: 1, opacity: 1, rotateX: 0, y: 0 }}
                         exit={{ scale: 0.8, opacity: 0, rotateX: -15, y: 50 }}
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
                         style={{ perspective: "1000px", transformStyle: "preserve-3d" }}
-                        className="relative w-full max-w-3xl bg-[#0a0a12]/95 border border-cyber-cyan/30 rounded-lg overflow-hidden shadow-[0_0_50px_rgba(0,255,255,0.15)]"
+                        className="relative w-full max-w-3xl max-h-[85vh] overflow-y-auto bg-[#0a0a12]/95 border border-cyber-cyan/30 rounded-lg shadow-[0_0_50px_rgba(0,255,255,0.15)]"
                     >
                         {/* Decorative Top Corners */}
                         <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyber-cyan z-10" />
@@ -336,7 +362,8 @@ const CreatePostModal = ({ isOpen, onClose, onSuccess }: CreatePostModalProps) =
                     </motion.div>
                 </div>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     );
 };
 

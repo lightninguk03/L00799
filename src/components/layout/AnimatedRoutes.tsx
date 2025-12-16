@@ -4,12 +4,21 @@ import Home from '../../pages/Home';
 import Login from '../../pages/Login';
 import Register from '../../pages/Register';
 import Profile from '../../pages/Profile';
-import AIChatPage from '../../pages/AIChatPage';
+import MuAI from '../../pages/MuAI';
 import Community from '../../pages/Community';
 import PostDetail from '../../pages/PostDetail';
 import MyPosts from '../../pages/MyPosts';
 import Activity from '../../pages/Activity';
 import Settings from '../../pages/Settings';
+import Notifications from '../../pages/Notifications';
+import FollowList from '../../pages/FollowList';
+import UserProfile from '../../pages/UserProfile';
+import ForgotPassword from '../../pages/ForgotPassword';
+import ResetPassword from '../../pages/ResetPassword';
+import VerifyEmail from '../../pages/VerifyEmail';
+import Gallery from '../../pages/Gallery';
+import Search from '../../pages/Search';
+import Banned from '../../pages/Banned';
 import RequireAuth from '../auth/RequireAuth';
 
 const pageVariants = {
@@ -62,15 +71,27 @@ const AnimatedRoutes = () => {
                 <Route path="/" element={<AnimatedPage><Home /></AnimatedPage>} />
                 <Route path="/login" element={<AnimatedPage><Login /></AnimatedPage>} />
                 <Route path="/register" element={<AnimatedPage><Register /></AnimatedPage>} />
+                <Route path="/forgot-password" element={<AnimatedPage><ForgotPassword /></AnimatedPage>} />
+                <Route path="/reset-password" element={<AnimatedPage><ResetPassword /></AnimatedPage>} />
+                <Route path="/verify-email" element={<AnimatedPage><VerifyEmail /></AnimatedPage>} />
+                <Route path="/banned" element={<AnimatedPage><Banned /></AnimatedPage>} />
 
                 {/* Protected Routes */}
                 <Route path="/profile" element={<RequireAuth><AnimatedPage><Profile /></AnimatedPage></RequireAuth>} />
-                <Route path="/mu-ai" element={<RequireAuth><AnimatedPage><AIChatPage /></AnimatedPage></RequireAuth>} />
+                <Route path="/mu-ai" element={<RequireAuth><AnimatedPage><MuAI /></AnimatedPage></RequireAuth>} />
                 <Route path="/community" element={<RequireAuth><AnimatedPage><Community /></AnimatedPage></RequireAuth>} />
                 <Route path="/post/:id" element={<RequireAuth><AnimatedPage><PostDetail /></AnimatedPage></RequireAuth>} />
                 <Route path="/my-posts" element={<RequireAuth><AnimatedPage><MyPosts /></AnimatedPage></RequireAuth>} />
                 <Route path="/activity" element={<RequireAuth><AnimatedPage><Activity /></AnimatedPage></RequireAuth>} />
                 <Route path="/settings" element={<RequireAuth><AnimatedPage><Settings /></AnimatedPage></RequireAuth>} />
+                <Route path="/notifications" element={<RequireAuth><AnimatedPage><Notifications /></AnimatedPage></RequireAuth>} />
+                <Route path="/following" element={<RequireAuth><AnimatedPage><FollowList /></AnimatedPage></RequireAuth>} />
+                <Route path="/followers" element={<RequireAuth><AnimatedPage><FollowList /></AnimatedPage></RequireAuth>} />
+                <Route path="/user/:id" element={<RequireAuth><AnimatedPage><UserProfile /></AnimatedPage></RequireAuth>} />
+                <Route path="/user/:userId/following" element={<RequireAuth><AnimatedPage><FollowList /></AnimatedPage></RequireAuth>} />
+                <Route path="/user/:userId/followers" element={<RequireAuth><AnimatedPage><FollowList /></AnimatedPage></RequireAuth>} />
+                <Route path="/gallery" element={<RequireAuth><AnimatedPage><Gallery /></AnimatedPage></RequireAuth>} />
+                <Route path="/search" element={<RequireAuth><AnimatedPage><Search /></AnimatedPage></RequireAuth>} />
             </Routes>
         </AnimatePresence>
     );

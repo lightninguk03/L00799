@@ -58,13 +58,10 @@ const NavBar = () => {
               <div className="absolute inset-0 bg-gradient-to-r from-neon-purple via-cyber-cyan to-neon-purple animate-pulse opacity-60" />
             </div>
 
-            {/* Logo */}
+            {/* Logo - 只显示图片，不显示文字 */}
             <div className="flex-shrink-0">
-              <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-                <img src={logoImg} alt={config.siteName} className="h-10 w-auto max-w-[120px] rounded-lg object-contain" />
-                <span className="text-xl font-orbitron font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-neon-purple to-cyber-cyan hidden lg:block neon-flicker">
-                  {config.siteName}
-                </span>
+              <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
+                <img src={logoImg} alt={config.siteName} className="h-12 w-auto max-w-[280px] rounded-lg object-contain" />
               </Link>
             </div>
 

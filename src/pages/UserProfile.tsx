@@ -9,23 +9,14 @@ import api from '../api';
 
 import CyberCard from '../components/ui/CyberCard';
 import PostCard from '../components/ui/PostCard';
-import NeonButton from '../components/ui/NeonButton';
 import { User, Users, UserPlus, UserMinus, ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { getAvatarUrl } from '../lib/utils';
-import type { UserResponse, PostResponse, PaginatedResponse } from '../api';
-
-// 用户主页返回的数据结构
-interface UserProfileData extends UserResponse {
-  post_count: number;
-  following_count: number;
-  follower_count: number;
-  is_following: boolean;
-}
+import { getAvatarUrl, cn } from '../lib/utils';
+import type { UserResponse, PostResponse, PaginatedResponse, UserProfile as UserProfileType } from '../api';
 
 const UserProfile = () => {
   const { t } = useTranslation();
-  const { userId } = useParams<{ userId: string }>();
+  const { id: userId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -38,15 +29,25 @@ const UserProfile = () => {
     },
   });
 
+  // 调试：打印 userId
+  console.log('UserProfile - userId from params:', userId);
+
   // 获取目标用户信息（包含关注状态和统计）
-  const { data: user, isLoading, refetch: refetchUser } = useQuery<UserProfileData>({
+  const { data: user, isLoading, error, refetch: refetchUser } = useQuery<UserProfileType>({
     queryKey: ['user', userId],
     queryFn: async () => {
+      console.log('Fetching user with ID:', userId);
       const res = await api.get(`/users/${userId}`);
+      console.log('User API response:', res.data);
+      console.log('User API response keys:', Object.keys(res.data));
       return res.data;
     },
-    enabled: !!userId,
+    enabled: !!userId && userId !== 'undefined',
   });
+
+  // 调试：打印 user 数据
+  console.log('User data:', user);
+  console.log('API error:', error);
 
   // 获取用户动态
   const { data: postsData } = useQuery<PaginatedResponse<PostResponse>>({
@@ -61,16 +62,31 @@ const UserProfile = () => {
   // 关注/取消关注
   const followMutation = useMutation({
     mutationFn: async () => {
+      console.log('Follow mutation triggered, is_following:', user?.is_following);
       if (user?.is_following) {
-        await api.delete(`/users/${userId}/follow`);
+        const res = await api.delete(`/users/${userId}/follow`);
+        return res.data;
       } else {
-        await api.post(`/users/${userId}/follow`);
+        const res = await api.post(`/users/${userId}/follow`);
+        return res.data;
       }
     },
     onSuccess: () => {
+      console.log('Follow mutation success');
       // 刷新用户数据以获取最新的关注状态
       refetchUser();
       queryClient.invalidateQueries({ queryKey: ['user', userId] });
+      // 刷新当前用户的关注统计（Profile 页面使用）
+      queryClient.invalidateQueries({ queryKey: ['followStats'] });
+      // 刷新目标用户的关注统计
+      queryClient.invalidateQueries({ queryKey: ['user', userId] });
+      // 刷新当前登录用户的关注统计
+      if (currentUser?.id) {
+        queryClient.invalidateQueries({ queryKey: ['followStats', currentUser.id] });
+      }
+    },
+    onError: (error) => {
+      console.error('Follow mutation error:', error);
     },
   });
 
@@ -122,10 +138,12 @@ const UserProfile = () => {
 
           {/* 用户信息 */}
           <div className="flex-1">
-            <h1 className="text-3xl font-orbitron font-bold text-white mb-2">{user.username}</h1>
+            <h1 className="text-3xl font-orbitron font-bold text-white mb-2">
+              {user.username || `用户 ${user.id}`}
+            </h1>
             <div className="flex items-center gap-4 text-sm text-gray-400 mb-4">
               <span className="font-mono px-2 py-0.5 border border-cyber-cyan/30 rounded bg-cyber-cyan/10 text-cyber-cyan">
-                ID-{user.id}
+                ID-{user.id || userId}
               </span>
             </div>
 
@@ -156,25 +174,38 @@ const UserProfile = () => {
 
           {/* 关注按钮 */}
           {!isOwnProfile && currentUser && (
-            <div className="flex-shrink-0">
-              <NeonButton
-                variant={user?.is_following ? 'outline' : 'primary'}
-                onClick={() => followMutation.mutate()}
+            <div className="flex-shrink-0 relative z-20">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('Button clicked');
+                  followMutation.mutate();
+                }}
                 disabled={followMutation.isPending}
-                className="min-w-[100px]"
+                className={cn(
+                  "min-w-[120px] px-6 py-2.5 font-orbitron text-sm tracking-wider uppercase transition-all duration-300 flex items-center justify-center gap-2",
+                  "disabled:opacity-50 disabled:cursor-not-allowed",
+                  user?.is_following
+                    ? "bg-transparent border-2 border-cyber-cyan text-cyber-cyan hover:bg-cyber-cyan/10"
+                    : "bg-cyber-cyan text-black font-bold border-2 border-cyber-cyan hover:bg-cyber-cyan/80"
+                )}
               >
-                {user?.is_following ? (
+                {followMutation.isPending ? (
+                  <span className="animate-pulse">...</span>
+                ) : user?.is_following ? (
                   <>
-                    <UserMinus className="w-4 h-4 mr-2" />
+                    <UserMinus className="w-4 h-4" />
                     {t('user.unfollow')}
                   </>
                 ) : (
                   <>
-                    <UserPlus className="w-4 h-4 mr-2" />
+                    <UserPlus className="w-4 h-4" />
                     {t('user.follow')}
                   </>
                 )}
-              </NeonButton>
+              </button>
             </div>
           )}
         </div>

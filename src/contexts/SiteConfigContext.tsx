@@ -81,6 +81,9 @@ export const SiteConfigProvider: React.FC<SiteConfigProviderProps> = ({
           // 功能开关
           features: b.features || prev.features,
           
+          // 世界观数据库配置
+          worldDatabase: b.world_database || prev.worldDatabase,
+          
           // 存储后端原始配置供其他组件使用
           _backendConfig: b,
         }));

@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../api';
 import CyberCard from '../components/ui/CyberCard';
 import EditProfileModal from '../components/ui/EditProfileModal';
-import { User, Settings, Activity, Grid, Bell } from 'lucide-react';
+import { User, Settings, Activity, Grid, Bell, Heart, MessageSquare, ChevronRight, Play } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { getAvatarUrl } from '../lib/utils';
 
-import type { UserResponse, UserStats } from '../api';
+import type { UserResponse, UserStats, PostResponse, PaginatedResponse } from '../api';
 
 interface NotificationCount {
   unread_count: number;
@@ -16,7 +16,7 @@ interface NotificationCount {
 
 interface FollowStats {
   following_count: number;
-  followers_count: number;
+  follower_count: number;  // 后端返回的是 follower_count（无 s）
 }
 
 const Profile = () => {
@@ -52,16 +52,31 @@ const Profile = () => {
     refetchInterval: 30000, // 每30秒刷新一次
   });
 
-  // 获取关注/粉丝数
+  // 获取关注/粉丝数 - 使用 /users/{id} API 获取完整用户信息
   const { data: followStats } = useQuery<FollowStats>({
     queryKey: ['followStats', user?.id],
     queryFn: async () => {
-      const res = await api.get(`/users/${user?.id}/follow-stats`);
-      return res.data;
+      const res = await api.get(`/users/${user?.id}`);
+      // 从用户信息中提取关注统计
+      return {
+        following_count: res.data.following_count || 0,
+        follower_count: res.data.follower_count || 0,
+      };
     },
     enabled: !!user?.id,
   });
 
+  // 获取我的帖子（最近5条）
+  const { data: myPostsData } = useQuery<PaginatedResponse<PostResponse>>({
+    queryKey: ['myPostsPreview'],
+    queryFn: async () => {
+      const res = await api.get('/posts/me', { params: { limit: 5 } });
+      return res.data;
+    },
+    enabled: !!user,
+  });
+
+  const recentPosts = myPostsData?.items || [];
   const unreadCount = notificationCount?.unread_count || 0;
 
   if (isUserLoading) {
@@ -138,10 +153,6 @@ const Profile = () => {
                   <div>
                     <h1 className="text-4xl font-orbitron font-bold text-white tracking-wider flex items-center gap-3 rgb-split-hover">
                       {user?.username || 'GUEST_USER'}
-                      <Settings
-                        className="w-5 h-5 text-gray-500 hover:text-white cursor-pointer transition-colors"
-                        onClick={() => setIsEditModalOpen(true)}
-                      />
                     </h1>
                     <div className="flex items-center gap-4 mt-2 text-sm font-mono">
                       <span className="text-neon-purple bg-neon-purple/10 px-2 py-1 rounded border border-neon-purple/30">
@@ -151,6 +162,14 @@ const Profile = () => {
                         {user?.email}
                       </span>
                     </div>
+                    {/* 编辑资料按钮 */}
+                    <button
+                      onClick={() => setIsEditModalOpen(true)}
+                      className="mt-4 px-4 py-2 bg-neon-purple/20 border border-neon-purple/50 rounded-lg text-neon-purple hover:bg-neon-purple/30 hover:border-neon-purple transition-all font-mono text-sm flex items-center gap-2"
+                    >
+                      <Settings className="w-4 h-4" />
+                      编辑资料
+                    </button>
                   </div>
 
                   {/* Digital Signature / Barcode Placeholder */}
@@ -168,7 +187,7 @@ const Profile = () => {
                   </button>
                   <div className="w-[1px] h-4 bg-white/10" />
                   <button onClick={() => navigate('/followers')} className="group flex items-center gap-2">
-                    <span className="text-xl font-orbitron font-bold text-white group-hover:text-neon-purple transition-colors">{followStats?.followers_count || 0}</span>
+                    <span className="text-xl font-orbitron font-bold text-white group-hover:text-neon-purple transition-colors">{followStats?.follower_count || 0}</span>
                     <span className="text-xs text-gray-500 uppercase tracking-wider">{t('profile.followers')}</span>
                   </button>
                 </div>
@@ -240,6 +259,144 @@ const Profile = () => {
             <h3 className="font-orbitron font-bold text-lg text-white mb-1 group-hover:text-pink-500 transition-colors">CONFIG</h3>
             <p className="text-xs text-gray-400 font-mono">{t('profile.settings.desc')}</p>
           </CyberCard>
+        </div>
+
+        {/* 最近帖子预览 */}
+        <div className="mt-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-orbitron font-bold text-gray-500 flex items-center gap-4">
+              <span className="w-2 h-8 bg-cyber-cyan" />
+              RECENT POSTS
+            </h2>
+            <button
+              onClick={() => navigate('/my-posts')}
+              className="text-cyber-cyan hover:text-white transition-colors flex items-center gap-1 text-sm font-mono"
+            >
+              查看全部 <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+
+          {recentPosts.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {recentPosts.map((post, index) => {
+                // 获取第一张图片或视频缩略图
+                const mediaUrl = post.media_urls && Array.isArray(post.media_urls) && post.media_urls.length > 0 
+                  ? post.media_urls[0] 
+                  : null;
+                const isVideo = post.media_type === 'video';
+                
+                return (
+                  <Link 
+                    key={post.id} 
+                    to={`/post/${post.id}`}
+                    className={`group relative overflow-hidden rounded-lg bg-gradient-to-br from-gray-900 to-black border border-white/10 hover:border-cyber-cyan/50 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(0,255,255,0.2)] ${isVideo ? 'aspect-[3/4]' : 'aspect-square'}`}
+                  >
+                    {/* 背景图片/视频 */}
+                    {mediaUrl ? (
+                      <>
+                        {isVideo ? (
+                          <>
+                            {/* 优先使用 thumbnail 封面图 */}
+                            {post.thumbnail ? (
+                              <img 
+                                src={post.thumbnail} 
+                                alt="" 
+                                className="absolute inset-0 w-full h-full object-cover bg-black group-hover:scale-105 transition-transform duration-500"
+                              />
+                            ) : (
+                              <video 
+                                src={mediaUrl} 
+                                className="absolute inset-0 w-full h-full object-contain bg-black group-hover:scale-105 transition-transform duration-500"
+                                muted
+                                playsInline
+                                preload="metadata"
+                                poster={`${mediaUrl}#t=0.1`}
+                              />
+                            )}
+                            {/* 视频遮罩和播放按钮 */}
+                            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                              <div className="w-10 h-10 rounded-full bg-black/70 flex items-center justify-center border-2 border-neon-purple/70 shadow-[0_0_15px_rgba(138,43,226,0.5)]">
+                                <Play className="w-5 h-5 text-neon-purple fill-current ml-0.5" />
+                              </div>
+                            </div>
+                            {/* 视频标签 */}
+                            <div className="absolute top-2 left-2 px-1.5 py-0.5 bg-neon-purple/80 text-white text-[10px] font-bold rounded z-10">
+                              VIDEO
+                            </div>
+                          </>
+                        ) : (
+                          <img 
+                            src={mediaUrl} 
+                            alt="" 
+                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                        )}
+                      </>
+                    ) : (
+                      /* 纯文字帖子背景 */
+                      <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/20 via-black to-cyber-cyan/20 flex items-center justify-center p-4">
+                        <p className="text-white/80 text-sm line-clamp-4 text-center font-sans">
+                          {post.content}
+                        </p>
+                      </div>
+                    )}
+                    
+                    {/* 渐变遮罩 */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
+                    
+                    {/* 序号标签 */}
+                    <div className="absolute top-2 left-2 w-6 h-6 bg-cyber-cyan/20 border border-cyber-cyan/50 rounded flex items-center justify-center">
+                      <span className="text-[10px] font-orbitron text-cyber-cyan font-bold">{String(index + 1).padStart(2, '0')}</span>
+                    </div>
+                    
+                    {/* 底部信息 */}
+                    <div className="absolute bottom-0 left-0 right-0 p-3">
+                      {/* 文字内容预览（有图片时显示） */}
+                      {mediaUrl && post.content && (
+                        <p className="text-white/90 text-xs line-clamp-2 mb-2 font-sans">
+                          {post.content}
+                        </p>
+                      )}
+                      
+                      {/* 统计数据 */}
+                      <div className="flex items-center justify-between text-[10px] font-mono">
+                        <div className="flex items-center gap-3 text-gray-400">
+                          <span className="flex items-center gap-1">
+                            <Heart className="w-3 h-3 text-neon-purple" />
+                            {post.like_count || 0}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <MessageSquare className="w-3 h-3 text-cyber-cyan" />
+                            {post.comment_count || 0}
+                          </span>
+                        </div>
+                        <span className="text-gray-500">
+                          {new Date(post.created_at).toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' })}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Hover 边框光效 */}
+                    <div className="absolute inset-0 border-2 border-transparent group-hover:border-cyber-cyan/30 rounded-lg transition-colors pointer-events-none" />
+                  </Link>
+                );
+              })}
+            </div>
+          ) : (
+            <CyberCard className="p-12 text-center border-white/10 border-dashed">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-cyber-cyan/10 border border-cyber-cyan/30 flex items-center justify-center">
+                <Grid className="w-8 h-8 text-cyber-cyan/50" />
+              </div>
+              <p className="text-gray-400 font-mono mb-2">数据库为空</p>
+              <p className="text-gray-600 text-sm mb-4">NO RECORDS FOUND</p>
+              <button
+                onClick={() => navigate('/community')}
+                className="px-6 py-2 bg-cyber-cyan/20 border border-cyber-cyan/50 rounded-lg text-cyber-cyan hover:bg-cyber-cyan/30 hover:shadow-[0_0_15px_rgba(0,255,255,0.3)] transition-all font-mono text-sm"
+              >
+                上传第一条记忆
+              </button>
+            </CyberCard>
+          )}
         </div>
       </div>
 

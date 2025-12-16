@@ -62,6 +62,7 @@ export interface PostResponse {
   content: string;
   media_type: MediaType;
   media_urls?: string | string[] | null;  // V2.3: 后端现在返回数组，保留 string 兼容旧版
+  thumbnail?: string | null;  // 视频封面图
   category_id?: number | null;
   repost_source_id?: number | null;
   created_at: string;

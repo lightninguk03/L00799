@@ -22,6 +22,18 @@ export default defineConfig({
       '/ai': {
         target: 'http://localhost:8000',
         changeOrigin: true,
+        secure: false,
+        configure: (proxy) => {
+          proxy.on('error', (err) => {
+            console.log('proxy error', err);
+          });
+          proxy.on('proxyReq', (proxyReq, req) => {
+            console.log('Proxying:', req.method, req.url, '-> http://localhost:8000' + req.url);
+          });
+          proxy.on('proxyRes', (proxyRes, req) => {
+            console.log('Response:', proxyRes.statusCode, req.url);
+          });
+        },
       },
       '/gallery': {
         target: 'http://localhost:8000',
@@ -36,6 +48,18 @@ export default defineConfig({
         changeOrigin: true,
       },
       '/reports': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/users': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/notifications': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/search': {
         target: 'http://localhost:8000',
         changeOrigin: true,
       }

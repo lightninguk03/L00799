@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X, Camera, User, Loader2 } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -24,6 +24,18 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   const [username, setUsername] = useState(user?.username || '');
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
+
+  // 模态框打开时禁止背景滚动
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   // 更新用户名
   const updateUsernameMutation = useMutation({
@@ -140,13 +152,13 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50"
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             onClick={onClose}
           />
           
@@ -156,10 +168,9 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", bounce: 0.3 }}
-            className="fixed inset-0 flex items-center justify-center z-50 p-4"
+            className="relative w-full max-w-md bg-[#0a0a14]/95 backdrop-blur-xl border border-neon-purple/50 rounded-2xl shadow-[0_0_50px_rgba(138,43,226,0.2)] overflow-hidden max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="w-full max-w-md bg-[#0a0a14]/95 backdrop-blur-xl border border-neon-purple/50 rounded-2xl shadow-[0_0_50px_rgba(138,43,226,0.2)] overflow-hidden">
               {/* Header */}
               <div className="p-6 border-b border-white/10 bg-gradient-to-r from-neon-purple/20 to-transparent flex items-center justify-between">
                 <h2 className="text-xl font-orbitron font-bold text-white">编辑资料</h2>
@@ -263,9 +274,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
                   </NeonButton>
                 </div>
               </form>
-            </div>
           </motion.div>
-        </>
+        </div>
       )}
     </AnimatePresence>
   );

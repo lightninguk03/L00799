@@ -2,6 +2,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import HolographicLayout from './components/layout/HolographicLayout';
 import AnimatedRoutes from './components/layout/AnimatedRoutes';
+import ScrollToTop from './components/layout/ScrollToTop';
 import { SiteConfigProvider } from './contexts/SiteConfigContext';
 import './i18n';
 
@@ -19,6 +20,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <SiteConfigProvider>
         <Router>
+          <ScrollToTop />
           <HolographicLayout>
             <AnimatedRoutes />
           </HolographicLayout>

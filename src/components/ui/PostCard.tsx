@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Heart, Bookmark, MessageSquare, Trash2, MoreHorizontal, Edit3, Share2, Flag } from 'lucide-react';
+import { Heart, Bookmark, MessageSquare, Trash2, MoreHorizontal, Edit3, Share2, Flag, Play } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../api';
 import type { PostResponse } from '../../api';
@@ -35,7 +35,9 @@ const PostCard = ({ post, showActions = true, currentUserId }: PostCardProps) =>
     const isOwnPost = user?.id === post.user_id || currentUserId === post.user_id;
 
     // 使用工具函数处理媒体 URL
-    let imageUrl = getMediaUrl(post.media_urls);
+    const mediaUrl = getMediaUrl(post.media_urls);
+    const isVideo = post.media_type === 'video';
+    let imageUrl = !isVideo ? mediaUrl : null;
 
     // Placeholder image if no media, or specific logic
     if (!imageUrl && post.media_type === 'image') {
@@ -48,6 +50,7 @@ const PostCard = ({ post, showActions = true, currentUserId }: PostCardProps) =>
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['posts'] });
+            queryClient.invalidateQueries({ queryKey: ['userStats'] });
         },
         onError: (_error: unknown, type: 'like' | 'bookmark') => {
             // 回滚 UI 状态
@@ -104,6 +107,9 @@ const PostCard = ({ post, showActions = true, currentUserId }: PostCardProps) =>
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['posts'] });
+            queryClient.invalidateQueries({ queryKey: ['userPosts'] });
+            queryClient.invalidateQueries({ queryKey: ['myPostsPreview'] });
+            queryClient.invalidateQueries({ queryKey: ['userStats'] });
             toast.success('动态已删除', {
                 style: { background: '#0a0a14', color: '#00ffff', border: '1px solid rgba(0, 255, 255, 0.3)' },
             });
@@ -131,24 +137,56 @@ const PostCard = ({ post, showActions = true, currentUserId }: PostCardProps) =>
     return (
         <Link to={`/post/${post.id}`} className="block mb-6 break-inside-avoid overflow-visible">
             <CyberCard className="group cursor-pointer hover:z-10 bg-glass-black/80 overflow-visible card-scan float-card relative" hoverEffect={true} chamfered={false}>
-                {/* Image with glass background for transparent images */}
-                {imageUrl && (
+                {/* Media: Image or Video */}
+                {(imageUrl || (isVideo && mediaUrl)) && (
                     <div className="relative w-full overflow-hidden rounded-lg mb-3 bg-glass-black/60 backdrop-blur-sm">
                         {/* 毛玻璃背景层 - 支持透明图片 */}
                         <div className="absolute inset-0 bg-gradient-to-br from-neon-purple/10 via-transparent to-cyber-cyan/10" />
-                        <img
-                            src={imageUrl}
-                            alt="Post Cover"
-                            className="relative object-contain w-full h-auto transition-transform duration-700 group-hover:scale-105"
-                            loading="lazy"
-                            style={{ maxHeight: '500px' }}
-                        />
+                        {isVideo && mediaUrl ? (
+                            <>
+                                <div className="relative w-full bg-black flex items-center justify-center" style={{ maxHeight: '500px' }}>
+                                    <video
+                                        src={mediaUrl}
+                                        className="relative object-contain w-full h-auto max-h-[500px] transition-transform duration-700 group-hover:scale-105"
+                                        playsInline
+                                        webkit-playsinline="true"
+                                        x5-playsinline="true"
+                                        muted
+                                        preload="metadata"
+                                        poster={post.thumbnail ? getMediaUrl(post.thumbnail) || undefined : `${mediaUrl}#t=0.1`}
+                                        onError={(e) => {
+                                            // 视频加载失败时显示占位图
+                                            const video = e.currentTarget;
+                                            video.style.display = 'none';
+                                        }}
+                                    />
+                                </div>
+                                {/* 视频播放图标 */}
+                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-black/30">
+                                    <div className="w-14 h-14 rounded-full bg-black/70 flex items-center justify-center border-2 border-neon-purple/70 shadow-[0_0_20px_rgba(138,43,226,0.5)]">
+                                        <Play className="w-7 h-7 text-neon-purple fill-current ml-1" />
+                                    </div>
+                                </div>
+                                {/* 视频标签 */}
+                                <div className="absolute top-2 left-2 px-2 py-1 bg-neon-purple/80 text-white text-xs font-bold rounded">
+                                    VIDEO
+                                </div>
+                            </>
+                        ) : (
+                            <img
+                                src={imageUrl!}
+                                alt="Post Cover"
+                                className="relative object-contain w-full h-auto transition-transform duration-700 group-hover:scale-105"
+                                loading="lazy"
+                                style={{ maxHeight: '500px' }}
+                            />
+                        )}
                         <div className="absolute inset-0 bg-gradient-to-t from-[#050510] via-transparent to-transparent opacity-40 pointer-events-none" />
                     </div>
                 )}
 
                 {/* Content */}
-                <div className={cn("px-3 pb-3", imageUrl ? "pt-4" : "pt-8")}>
+                <div className={cn("px-3 pb-3", (imageUrl || (isVideo && mediaUrl)) ? "pt-4" : "pt-8")}>
                     <div className="flex items-center justify-between mb-3">
                         <div 
                             className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
@@ -282,7 +320,7 @@ const PostCard = ({ post, showActions = true, currentUserId }: PostCardProps) =>
                                     e.stopPropagation();
                                     const url = `${window.location.origin}/post/${post.id}`;
                                     navigator.clipboard.writeText(url).then(() => {
-                                        toast.success('链接已复制到剪贴板', {
+                                        toast.success('链接已复制', {
                                             style: { background: '#0a0a14', color: '#00ffff', border: '1px solid rgba(0, 255, 255, 0.3)' },
                                         });
                                     }).catch(() => {

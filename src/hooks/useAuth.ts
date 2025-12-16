@@ -52,8 +52,20 @@ export const useAuth = (): UseAuthReturn => {
     return true;
   }, [token]);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    // 调用后端登出 API 使 refresh_token 失效
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (refreshToken) {
+      try {
+        await api.post('/auth/logout', { refresh_token: refreshToken });
+      } catch {
+        // 忽略登出 API 错误
+      }
+    }
+    // 清除所有 Token
     localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user_info');
     navigate('/login');
     toast.success('已退出登录', {
       style: {

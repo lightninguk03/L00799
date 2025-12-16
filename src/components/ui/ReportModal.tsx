@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X, AlertTriangle, Flag } from 'lucide-react';
@@ -27,6 +27,18 @@ const REPORT_REASONS = [
 const ReportModal = ({ isOpen, onClose, targetType, targetId }: ReportModalProps) => {
   const [selectedReason, setSelectedReason] = useState('');
   const [customReason, setCustomReason] = useState('');
+
+  // 模态框打开时禁止背景滚动
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   const reportMutation = useMutation({
     mutationFn: async () => {
@@ -80,7 +92,7 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId }: ReportModalProps
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-[#0a0a14] border border-red-500/30 rounded-2xl w-full max-w-md overflow-hidden"
+            className="bg-[#0a0a14] border border-red-500/30 rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}

@@ -2,12 +2,20 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Info, AlertTriangle, Megaphone, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { systemApi, type Announcement } from '../../api';
+import { useSiteConfig } from '../../contexts/SiteConfigContext';
+import { useTranslation } from 'react-i18next';
 
 const AnnouncementBanner = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [dismissed, setDismissed] = useState<number[]>([]);
+  const [configDismissed, setConfigDismissed] = useState(false);
+  const { config } = useSiteConfig();
+  const { i18n } = useTranslation();
+  const isZh = i18n.language.startsWith('zh');
 
+  // 从 /system/announcements API 获取公告列表
   const { data: announcements = [] } = useQuery<Announcement[]>({
     queryKey: ['announcements'],
     queryFn: async () => {
@@ -31,6 +39,15 @@ const AnnouncementBanner = () => {
     staleTime: 5 * 60 * 1000, // 5分钟缓存
     retry: false, // 不重试，避免接口不存在时反复请求
   });
+  
+  // 从 /system/config 获取的单个公告配置
+  const configAnnouncement = config._backendConfig?.announcement as {
+    enabled?: boolean;
+    type?: 'info' | 'warning' | 'important';
+    content?: string;
+    content_cn?: string;
+    link?: string;
+  } | undefined;
 
   // 确保 announcements 是数组
   const safeAnnouncements = Array.isArray(announcements) ? announcements : [];
@@ -39,6 +56,9 @@ const AnnouncementBanner = () => {
   const activeAnnouncements = safeAnnouncements.filter(
     (a) => a.is_active && !dismissed.includes(a.id)
   );
+  
+  // 检查是否有来自 config 的公告
+  const hasConfigAnnouncement = configAnnouncement?.enabled && configAnnouncement?.content && !configDismissed;
 
   // 自动轮播
   useEffect(() => {
@@ -48,6 +68,68 @@ const AnnouncementBanner = () => {
     }, 5000);
     return () => clearInterval(timer);
   }, [activeAnnouncements.length]);
+  
+  // 如果有 config 公告，优先显示
+  if (hasConfigAnnouncement) {
+    const content = isZh ? (configAnnouncement.content_cn || configAnnouncement.content) : configAnnouncement.content;
+    const type = configAnnouncement.type || 'info';
+    const link = configAnnouncement.link;
+    
+    const getTypeStyles = (t: string) => {
+      switch (t) {
+        case 'warning':
+          return {
+            bg: 'bg-yellow-500/10',
+            border: 'border-yellow-500/30',
+            icon: <AlertTriangle className="w-4 h-4 text-yellow-500" />,
+            text: 'text-yellow-200',
+          };
+        case 'important':
+          return {
+            bg: 'bg-red-500/10',
+            border: 'border-red-500/30',
+            icon: <Megaphone className="w-4 h-4 text-red-400" />,
+            text: 'text-red-200',
+          };
+        default:
+          return {
+            bg: 'bg-cyber-cyan/10',
+            border: 'border-cyber-cyan/30',
+            icon: <Info className="w-4 h-4 text-cyber-cyan" />,
+            text: 'text-cyber-cyan',
+          };
+      }
+    };
+    
+    const styles = getTypeStyles(type);
+    
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={`${styles.bg} ${styles.border} border rounded-lg px-4 py-3 mb-4`}
+      >
+        <div className="flex items-center gap-3">
+          <div className="flex-shrink-0">{styles.icon}</div>
+          <div className="flex-1 min-w-0">
+            {link ? (
+              <Link to={link} className={`text-sm ${styles.text} hover:underline`}>
+                {content}
+              </Link>
+            ) : (
+              <p className={`text-sm ${styles.text}`}>{content}</p>
+            )}
+          </div>
+          <button
+            onClick={() => setConfigDismissed(true)}
+            className="flex-shrink-0 p-1 text-gray-400 hover:text-white transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
 
   if (activeAnnouncements.length === 0) return null;
 

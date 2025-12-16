@@ -23,6 +23,18 @@ const EditPostModal = ({ isOpen, onClose, post }: EditPostModalProps) => {
         setContent(post.content || '');
     }, [post]);
 
+    // 模态框打开时禁止背景滚动
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [isOpen]);
+
     const editMutation = useMutation({
         mutationFn: async (newContent: string) => {
             const res = await api.put(`/posts/${post.id}`, { content: newContent });
@@ -31,6 +43,8 @@ const EditPostModal = ({ isOpen, onClose, post }: EditPostModalProps) => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['posts'] });
             queryClient.invalidateQueries({ queryKey: ['post', post.id] });
+            queryClient.invalidateQueries({ queryKey: ['userPosts'] });
+            queryClient.invalidateQueries({ queryKey: ['myPostsPreview'] });
             toast.success('动态已更新', {
                 style: { background: '#0a0a14', color: '#00ffff', border: '1px solid rgba(0, 255, 255, 0.3)' },
             });
@@ -68,7 +82,7 @@ const EditPostModal = ({ isOpen, onClose, post }: EditPostModalProps) => {
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.9, opacity: 0 }}
-                        className="relative w-full max-w-lg bg-[#0a0a14] border border-white/10 rounded-xl shadow-2xl"
+                        className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-[#0a0a14] border border-white/10 rounded-xl shadow-2xl"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Header */}

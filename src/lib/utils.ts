@@ -18,9 +18,13 @@ export function getFullUrl(url: string | null | undefined): string | null {
     return url;
 }
 
-// 处理头像 URL
-export function getAvatarUrl(avatar: string | null | undefined): string | null {
-    return getFullUrl(avatar);
+// 处理头像 URL - 支持默认头像
+export function getAvatarUrl(avatar: string | null | undefined, defaultAvatar?: string | null): string | null {
+    const url = getFullUrl(avatar);
+    if (url) return url;
+    // 如果没有头像，返回默认头像
+    if (defaultAvatar) return getFullUrl(defaultAvatar);
+    return null;
 }
 
 // 处理媒体 URL（图片、视频等）

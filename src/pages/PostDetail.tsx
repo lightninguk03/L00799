@@ -3,10 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../api';
 import type { PostResponse, CommentResponse } from '../api';
-import { ArrowLeft, Send, Heart, Share2, MoreHorizontal, User, Bookmark } from 'lucide-react';
+import { ArrowLeft, Send, Heart, Share2, MoreHorizontal, User, Bookmark, Edit3, Trash2, Flag } from 'lucide-react';
 import { cn, getMediaUrl, getAvatarUrl } from '../lib/utils';
 import NeonButton from '../components/ui/NeonButton';
 import { motion } from 'framer-motion';
+import { useAuth } from '../hooks/useAuth';
+import EditPostModal from '../components/ui/EditPostModal';
+import ReportModal from '../components/ui/ReportModal';
+import toast from 'react-hot-toast';
 
 const PostDetail = () => {
     const { id } = useParams();
@@ -67,6 +71,14 @@ const PostDetail = () => {
 
     const [isLiked, setIsLiked] = useState(false);
     const [isBookmarked, setIsBookmarked] = useState(false);
+    const [showMenu, setShowMenu] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [showReportModal, setShowReportModal] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const { user } = useAuth();
+    
+    // 判断是否是自己的帖子
+    const isOwnPost = user?.id === post?.user_id;
 
     // Sync state when data loads
     React.useEffect(() => {
@@ -83,6 +95,8 @@ const PostDetail = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['post', id] });
+            queryClient.invalidateQueries({ queryKey: ['posts'] });
+            queryClient.invalidateQueries({ queryKey: ['userStats'] });
         }
     });
 
@@ -95,6 +109,25 @@ const PostDetail = () => {
         setIsBookmarked(!isBookmarked);
         interactMutation.mutate('bookmark');
     };
+
+    // 删除帖子
+    const deleteMutation = useMutation({
+        mutationFn: async () => {
+            await api.delete(`/posts/${id}`);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['posts'] });
+            toast.success('动态已删除', {
+                style: { background: '#0a0a14', color: '#00ffff', border: '1px solid rgba(0, 255, 255, 0.3)' },
+            });
+            navigate(-1);
+        },
+        onError: () => {
+            toast.error('删除失败', {
+                style: { background: '#0a0a14', color: '#ff6b6b', border: '1px solid rgba(255, 107, 107, 0.3)' },
+            });
+        }
+    });
 
     const handleSend = (e: React.FormEvent) => {
         e.preventDefault();
@@ -113,7 +146,9 @@ const PostDetail = () => {
     }
 
     // Media parsing - 使用工具函数兼容数组和字符串格式
-    let imageUrl = getMediaUrl(post.media_urls);
+    const mediaUrl = getMediaUrl(post.media_urls);
+    const isVideo = post.media_type === 'video';
+    let imageUrl = !isVideo ? mediaUrl : null;
     if (!imageUrl && post.media_type === 'image') {
         imageUrl = 'https://placehold.co/800x600/050510/8a2be2?text=No+Image';
     }
@@ -132,7 +167,37 @@ const PostDetail = () => {
                     <span className="text-sm font-orbitron">返回</span>
                 </button>
 
-                {imageUrl ? (
+                {isVideo && mediaUrl ? (
+                    <div className="relative w-full h-full flex items-center justify-center">
+                        <video
+                            src={mediaUrl}
+                            controls
+                            autoPlay
+                            loop
+                            playsInline
+                            webkit-playsinline="true"
+                            x5-playsinline="true"
+                            x5-video-player-type="h5"
+                            x5-video-player-fullscreen="true"
+                            preload="auto"
+                            className="max-h-[60vh] lg:max-h-full w-auto object-contain"
+                            style={{ maxWidth: '100%' }}
+                            onError={(e) => {
+                                console.error('Video error:', e);
+                                const video = e.currentTarget;
+                                // 尝试重新加载
+                                if (video.error) {
+                                    console.error('Video error code:', video.error.code, video.error.message);
+                                }
+                            }}
+                        >
+                            <source src={mediaUrl} type="video/mp4" />
+                            <source src={mediaUrl} type="video/webm" />
+                            <source src={mediaUrl} type="video/ogg" />
+                            您的浏览器不支持视频播放
+                        </video>
+                    </div>
+                ) : imageUrl ? (
                     <img
                         src={imageUrl}
                         alt="Post Content"
@@ -166,7 +231,44 @@ const PostDetail = () => {
                             <p className="text-xs text-cyber-cyan">@{post.user?.username || post.user_id} • Agent</p>
                         </div>
                     </div>
-                    <button className="text-gray-400 hover:text-white"><MoreHorizontal className="w-5 h-5" /></button>
+                    <div className="relative">
+                        <button 
+                            onClick={() => setShowMenu(!showMenu)}
+                            className="text-gray-400 hover:text-white p-1 rounded hover:bg-white/10"
+                        >
+                            <MoreHorizontal className="w-5 h-5" />
+                        </button>
+                        {showMenu && (
+                            <div className="absolute right-0 top-8 bg-[#0a0a14] border border-white/10 rounded-lg shadow-lg z-20 min-w-[120px]">
+                                {isOwnPost ? (
+                                    <>
+                                        <button
+                                            onClick={() => { setShowEditModal(true); setShowMenu(false); }}
+                                            className="w-full px-4 py-2 text-left text-sm text-cyber-cyan hover:bg-cyber-cyan/10 flex items-center gap-2"
+                                        >
+                                            <Edit3 className="w-4 h-4" />
+                                            编辑
+                                        </button>
+                                        <button
+                                            onClick={() => { setShowDeleteConfirm(true); setShowMenu(false); }}
+                                            className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-red-500/10 flex items-center gap-2"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                            删除
+                                        </button>
+                                    </>
+                                ) : (
+                                    <button
+                                        onClick={() => { setShowReportModal(true); setShowMenu(false); }}
+                                        className="w-full px-4 py-2 text-left text-sm text-orange-400 hover:bg-orange-500/10 flex items-center gap-2"
+                                    >
+                                        <Flag className="w-4 h-4" />
+                                        举报
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Scrollable Content */}
@@ -232,9 +334,14 @@ const PostDetail = () => {
                             <Bookmark className={cn("w-5 h-5", isBookmarked && "fill-current")} />
                         </button>
 
-                        <button onClick={() => navigator.clipboard.writeText(window.location.href)} className="flex items-center space-x-1 hover:text-white transition-colors">
+                        <button 
+                            onClick={() => {
+                                navigator.clipboard.writeText(window.location.href);
+                                // 可以添加 toast 提示
+                            }} 
+                            className="flex items-center space-x-1 hover:text-green-400 transition-colors"
+                        >
                             <Share2 className="w-5 h-5" />
-                            <span className="text-xs">Share</span>
                         </button>
                     </div>
                 </div>
@@ -260,6 +367,48 @@ const PostDetail = () => {
                 </div>
 
             </div>
+
+            {/* 删除确认对话框 */}
+            {showDeleteConfirm && (
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+                    <div className="bg-[#0a0a14] border border-white/10 rounded-lg p-6 max-w-sm">
+                        <p className="text-white text-sm mb-4">确定要删除这条动态吗？</p>
+                        <div className="flex gap-2 justify-end">
+                            <button
+                                onClick={() => setShowDeleteConfirm(false)}
+                                className="px-4 py-2 text-sm border border-white/20 rounded text-gray-400 hover:text-white"
+                            >
+                                取消
+                            </button>
+                            <button
+                                onClick={() => { deleteMutation.mutate(); setShowDeleteConfirm(false); }}
+                                className="px-4 py-2 text-sm bg-red-500/20 border border-red-500/50 rounded text-red-400 hover:bg-red-500/30"
+                            >
+                                {deleteMutation.isPending ? '删除中...' : '确认删除'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* 编辑模态框 */}
+            {post && (
+                <EditPostModal
+                    isOpen={showEditModal}
+                    onClose={() => setShowEditModal(false)}
+                    post={post}
+                />
+            )}
+
+            {/* 举报模态框 */}
+            {post && (
+                <ReportModal
+                    isOpen={showReportModal}
+                    onClose={() => setShowReportModal(false)}
+                    targetType="post"
+                    targetId={post.id}
+                />
+            )}
         </div>
     );
 };

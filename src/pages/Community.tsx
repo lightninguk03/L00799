@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Search, Users, Send } from 'lucide-react';
+import { Search, Users, Send, Loader2 } from 'lucide-react';
 
 import api from '../api';
 import type { PostResponse, PaginatedResponse, UserResponse } from '../api';
@@ -12,6 +13,8 @@ import MasonryGrid from '../components/ui/MasonryGrid';
 import { cn } from '../lib/utils';
 import { useAuth } from '../hooks/useAuth';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const PAGE_SIZE = 20;
 
 const Community = () => {
   const { t } = useTranslation();
@@ -24,6 +27,9 @@ const Community = () => {
 
 
 
+  // 无限滚动观察器
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+
   // 发帖需要登录
   const handleCreatePost = () => {
     if (requireAuth(undefined, '请先登录后再发帖')) {
@@ -31,15 +37,54 @@ const Community = () => {
     }
   };
 
-  // 获取帖子列表
-  const { data: paginatedData, isLoading } = useQuery<PaginatedResponse<PostResponse>>({
-    queryKey: ['posts'],
-    queryFn: async () => {
-      const res = await api.get('/posts/');
+  // 获取帖子列表 - 无限滚动
+  const {
+    data: infiniteData,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ['posts-infinite'],
+    queryFn: async ({ pageParam = 1 }) => {
+      const res = await api.get<PaginatedResponse<PostResponse>>('/posts/', {
+        params: { page: pageParam, page_size: PAGE_SIZE }
+      });
       return res.data;
     },
+    getNextPageParam: (lastPage, allPages) => {
+      const totalPages = Math.ceil(lastPage.total / PAGE_SIZE);
+      const nextPage = allPages.length + 1;
+      return nextPage <= totalPages ? nextPage : undefined;
+    },
+    initialPageParam: 1,
     enabled: !isSearching,
   });
+
+  // 合并所有页面的帖子
+  const allPosts = infiniteData?.pages.flatMap(page => page.items) || [];
+
+  // 无限滚动 - 使用 Intersection Observer
+  const handleObserver = useCallback((entries: IntersectionObserverEntry[]) => {
+    const [target] = entries;
+    if (target.isIntersecting && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  useEffect(() => {
+    const element = loadMoreRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(handleObserver, {
+      root: null,
+      rootMargin: '100px',
+      threshold: 0,
+    });
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [handleObserver]);
 
   // 搜索帖子 - 使用 /search/posts?q=xxx 端点
   const { data: searchPostsData, isLoading: isSearchingPosts } = useQuery<PaginatedResponse<PostResponse>>({
@@ -61,7 +106,7 @@ const Community = () => {
     enabled: isSearching && searchTab === 'users' && searchQuery.length > 0,
   });
 
-  const posts = isSearching ? (searchPostsData?.items || []) : (paginatedData?.items || []);
+  const posts = isSearching ? (searchPostsData?.items || []) : allPosts;
   const users = searchUsersData?.items || [];
 
 
@@ -218,19 +263,37 @@ const Community = () => {
         ) : (
           // 帖子列表 - 瀑布流布局
           posts.length > 0 ? (
-            <MasonryGrid gap={24}>
-              {posts.map((post, index) => (
-                <motion.div
-                  key={post.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                  className="overflow-visible"
-                >
-                  <PostCard post={post} />
-                </motion.div>
-              ))}
-            </MasonryGrid>
+            <>
+              <MasonryGrid gap={24}>
+                {posts.map((post, index) => (
+                  <motion.div
+                    key={post.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: Math.min(index * 0.05, 1), duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                    className="overflow-visible"
+                  >
+                    <PostCard post={post} />
+                  </motion.div>
+                ))}
+              </MasonryGrid>
+              
+              {/* 无限滚动加载指示器 */}
+              <div ref={loadMoreRef} className="py-8 flex justify-center">
+                {isFetchingNextPage ? (
+                  <div className="flex items-center gap-3 text-cyber-cyan">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span className="font-mono text-sm">LOADING MORE DATA...</span>
+                  </div>
+                ) : hasNextPage ? (
+                  <div className="text-gray-500 font-mono text-xs">SCROLL FOR MORE</div>
+                ) : posts.length > PAGE_SIZE ? (
+                  <div className="text-gray-600 font-mono text-xs border border-gray-800 px-4 py-2 rounded">
+                    END OF DATA STREAM
+                  </div>
+                ) : null}
+              </div>
+            </>
           ) : (
             <div className="text-center py-20">
               <div className="inline-block p-6 rounded-full bg-white/5 mb-4">
@@ -244,9 +307,11 @@ const Community = () => {
         )}
       </div>
 
-      {/* 右下角发帖按钮 - 能量核心风格 */}
-      {!isPostModalOpen && (
-      <div className="fixed right-4 md:right-8 bottom-28 md:bottom-24 z-[99999]">
+      {/* 底部中间发帖按钮 - 使用 Portal 渲染到 body，避免被 AnimatedRoutes 的 transform 影响 */}
+      {!isPostModalOpen && !isSearching && createPortal(
+      <div 
+        className="fixed left-1/2 -translate-x-1/2 bottom-28 md:bottom-10 z-[9999]"
+      >
         <div className="relative group">
           {/* 能量场波纹 - 最外层 */}
           <div className="absolute inset-[-20px] rounded-full border border-neon-purple/20 energy-field-ripple pointer-events-none" />
@@ -314,7 +379,8 @@ const Community = () => {
             )}
           </AnimatePresence>
         </div>
-      </div>
+      </div>,
+      document.body
       )}
 
       {/* 发帖模态框 */}

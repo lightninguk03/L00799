@@ -1,73 +1,297 @@
-# React + TypeScript + Vite
+# ⚡ LETAVERSE 前端项目
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> 赛博朋克风格 ACG 社交元宇宙平台前端
 
-Currently, two official plugins are available:
+## 📖 项目简介
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+LETAVERSE（莱塔宇宙）是一个具有赛博朋克（Cyberpunk）风格的 ACG 社交平台。项目采用霓虹色彩、毛玻璃效果、动态交互等视觉元素，打造沉浸式的未来科技感体验。
 
-## React Compiler
+### 核心特性
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- 🎨 **赛博朋克视觉风格** - 霓虹紫/青配色、毛玻璃效果、HUD 覆盖层、动态扫描线
+- 🤖 **AI 助手 Mu** - 智能对话、悬浮聊天窗口、全屏对话页面
+- 📱 **响应式设计** - 完美适配桌面端和移动端
+- 🌐 **国际化支持** - 中英双语切换
+- ⚡ **流畅动画** - Framer Motion 页面过渡和微交互
 
-## Expanding the ESLint configuration
+## 🛠️ 技术栈
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+| 类别 | 技术 |
+|------|------|
+| 框架 | React 19 + TypeScript |
+| 构建 | Vite 7 |
+| 样式 | Tailwind CSS 4 |
+| 状态管理 | TanStack Query (React Query) |
+| 路由 | React Router DOM 7 |
+| 动画 | Framer Motion |
+| 国际化 | i18next |
+| HTTP | Axios |
+| 图标 | Lucide React |
+| 测试 | Vitest + fast-check |
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 📁 项目结构
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+frontend/
+├── src/
+│   ├── assets/              # 静态资源（图片、图标）
+│   ├── components/          # 可复用组件
+│   │   ├── ai/              # AI 相关组件
+│   │   ├── auth/            # 认证组件
+│   │   ├── landing/         # 落地页组件
+│   │   ├── layout/          # 布局组件
+│   │   └── ui/              # 通用 UI 组件
+│   ├── config/              # 配置文件
+│   ├── contexts/            # React Context
+│   ├── hooks/               # 自定义 Hooks
+│   ├── lib/                 # 工具函数
+│   ├── locales/             # 国际化翻译文件
+│   ├── pages/               # 页面组件
+│   ├── __tests__/           # 测试文件
+│   ├── api.ts               # API 接口定义
+│   ├── i18n.ts              # 国际化配置
+│   ├── App.tsx              # 应用入口
+│   └── main.tsx             # 主入口
+├── public/                  # 公共资源
+├── vite.config.ts           # Vite 配置
+├── tailwind.config.js       # Tailwind 配置
+└── package.json             # 依赖管理
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🚀 快速开始
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 环境要求
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Node.js >= 18
+- npm >= 9
+
+### 安装依赖
+
+```bash
+cd frontend
+npm install
 ```
+
+### 开发模式
+
+```bash
+npm run dev
+```
+
+访问 http://localhost:5173
+
+### 构建生产版本
+
+```bash
+npm run build
+```
+
+构建产物在 `dist/` 目录
+
+### 预览生产版本
+
+```bash
+npm run preview
+```
+
+### 运行测试
+
+```bash
+# 单次运行
+npm run test
+
+# 监听模式
+npm run test:watch
+```
+
+### 代码检查
+
+```bash
+npm run lint
+```
+
+## 📄 页面路由
+
+### 公开页面
+
+| 路径 | 页面 | 说明 |
+|------|------|------|
+| `/` | Home | 首页 |
+| `/login` | Login | 登录 |
+| `/register` | Register | 注册 |
+| `/verify-email` | VerifyEmail | 邮箱验证 |
+| `/forgot-password` | ForgotPassword | 忘记密码 |
+| `/reset-password` | ResetPassword | 重置密码 |
+| `/banned` | Banned | 封禁提示 |
+| `/gallery` | Gallery | 图库 |
+| `/search` | Search | 搜索 |
+
+### 需要登录的页面
+
+| 路径 | 页面 | 说明 |
+|------|------|------|
+| `/community` | Community | 社区 |
+| `/mu-ai` | MuAI | AI 助手 |
+| `/profile` | Profile | 个人中心 |
+| `/settings` | Settings | 设置 |
+| `/notifications` | Notifications | 通知 |
+| `/my-posts` | MyPosts | 我的动态 |
+| `/post/:id` | PostDetail | 动态详情 |
+| `/user/:userId` | UserProfile | 用户主页 |
+| `/user/:userId/following` | FollowList | 关注列表 |
+| `/user/:userId/followers` | FollowList | 粉丝列表 |
+
+## 🎨 设计系统
+
+### 配色方案
+
+| 颜色 | Hex | 用途 |
+|------|-----|------|
+| 霓虹紫 | `#8a2be2` | 主色调、按钮、边框 |
+| 赛博青 | `#00ffff` | 强调色、链接、图标 |
+| 玫红 | `#ff0055` | 次级高亮 |
+| 深黑 | `#0a0a10` | 背景色 |
+
+### 视觉效果
+
+- **毛玻璃**: `backdrop-blur` + 半透明背景
+- **霓虹发光**: `box-shadow` 多层叠加
+- **扫描线**: CSS 动画实现
+- **HUD 覆盖层**: 四角装饰 + 状态文本
+
+## 🔧 配置说明
+
+### 环境变量
+
+项目通过 Vite 代理配置连接后端，无需额外环境变量。
+
+### API 代理
+
+在 `vite.config.ts` 中配置：
+
+```typescript
+proxy: {
+  '/auth': { target: 'http://localhost:8000' },
+  '/posts': { target: 'http://localhost:8000' },
+  '/users': { target: 'http://localhost:8000' },
+  // ...
+}
+```
+
+### 后端配置
+
+前端通过 `/system/config` API 获取动态配置，支持：
+
+- 网站名称、Logo、标语
+- AI 助手信息
+- 背景图、看板娘图片
+- 社交链接
+- 功能开关
+
+## 📦 主要组件
+
+### 布局组件
+
+- `HolographicLayout` - 全局布局容器，管理背景、HUD、导航栏
+- `NavBar` - 导航栏，桌面端顶部 / 移动端底部
+- `AnimatedRoutes` - 路由动画包装器
+
+### UI 组件
+
+- `NeonButton` - 霓虹风格按钮
+- `CyberCard` - 赛博风格卡片
+- `CyberInput` - 赛博风格输入框
+- `GlitchText` - 故障效果文字
+- `PostCard` - 动态卡片
+- `MasonryGrid` - 瀑布流布局
+
+### AI 组件
+
+- `ChatWidget` - 悬浮聊天窗口
+
+### 模态框
+
+- `CreatePostModal` - 发布动态
+- `EditPostModal` - 编辑动态
+- `EditProfileModal` - 编辑资料
+- `ReportModal` - 举报
+- `RepostModal` - 转发
+
+## 🌐 国际化
+
+翻译文件位于 `src/locales/`：
+
+- `zh.json` - 中文
+- `en.json` - 英文
+
+使用方式：
+
+```tsx
+import { useTranslation } from 'react-i18next';
+
+const { t, i18n } = useTranslation();
+const isZh = i18n.language.startsWith('zh');
+
+// 使用翻译
+<span>{t('common.login')}</span>
+```
+
+## 📱 响应式适配
+
+- **桌面端**: 顶部导航栏，多列布局
+- **移动端**: 底部 Tab 栏，单列布局
+- **iOS 安全区域**: 适配刘海屏和底部安全区域
+- **触摸优化**: 最小触摸区域 44x44px
+
+## 🧪 测试
+
+项目使用 Vitest 进行单元测试，fast-check 进行属性测试。
+
+测试文件位于 `src/__tests__/`：
+
+```bash
+# 运行所有测试
+npm run test
+
+# 监听模式
+npm run test:watch
+```
+
+## 📝 开发规范
+
+### 代码风格
+
+- 使用 TypeScript 严格模式
+- 遵循 ESLint 规则
+- 组件使用函数式组件 + Hooks
+
+### 命名规范
+
+- 组件文件: PascalCase (`PostCard.tsx`)
+- 工具函数: camelCase (`getMediaUrl.ts`)
+- 常量: UPPER_SNAKE_CASE
+
+### 提交规范
+
+```
+feat: 新功能
+fix: 修复 bug
+docs: 文档更新
+style: 样式调整
+refactor: 重构
+test: 测试相关
+chore: 构建/工具
+```
+
+## 📋 更新日志
+
+详见 [前端开发文档.md](../前端开发文档.md)
+
+## 📄 许可证
+
+私有项目，保留所有权利。
+
+---
+
+**版本**: 2.9  
+**更新日期**: 2025-12-16

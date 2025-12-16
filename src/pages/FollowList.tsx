@@ -20,16 +20,28 @@ const FollowList = () => {
   const isFollowers = location.pathname.includes('followers');
   const title = isFollowers ? t('profile.followers') : t('profile.following');
 
+  // 获取当前用户信息（用于获取当前用户的关注/粉丝列表）
+  const { data: currentUser } = useQuery<UserResponse>({
+    queryKey: ['currentUser'],
+    queryFn: async () => {
+      const res = await api.get('/auth/me');
+      return res.data;
+    },
+  });
+
+  // 如果 URL 中有 userId 则使用它，否则使用当前用户的 ID
+  const targetUserId = userId || currentUser?.id?.toString();
+
   const { data, isLoading } = useQuery<PaginatedResponse<UserResponse>>({
-    queryKey: [isFollowers ? 'followers' : 'following', userId],
+    queryKey: [isFollowers ? 'followers' : 'following', targetUserId],
     queryFn: async () => {
       const endpoint = isFollowers
-        ? `/users/${userId}/followers`
-        : `/users/${userId}/following`;
+        ? `/users/${targetUserId}/followers`
+        : `/users/${targetUserId}/following`;
       const res = await api.get(endpoint);
       return res.data;
     },
-    enabled: !!userId,
+    enabled: !!targetUserId,
   });
 
   const users = data?.items || [];

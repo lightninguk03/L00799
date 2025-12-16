@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import NavBar from './NavBar';
 import CreatePostModal from '../ui/CreatePostModal';
 import HUDOverlay from '../ui/HUDOverlay';
@@ -15,6 +15,25 @@ const HolographicLayout: React.FC<LayoutProps> = ({ children }) => {
     const [isPostModalOpen, setIsPostModalOpen] = useState(false);
     const { config } = useSiteConfig();
     const backgroundImage = getMediaUrl(config.backgroundImage) || bgCyberpunkDefault;
+
+    // 动态设置 favicon
+    useEffect(() => {
+        const faviconUrl = getMediaUrl(config.favicon);
+        if (faviconUrl) {
+            const link = document.querySelector("link[rel*='icon']") as HTMLLinkElement || document.createElement('link');
+            link.type = 'image/x-icon';
+            link.rel = 'shortcut icon';
+            link.href = faviconUrl;
+            document.getElementsByTagName('head')[0].appendChild(link);
+        }
+    }, [config.favicon]);
+
+    // 动态设置页面标题
+    useEffect(() => {
+        if (config.siteName) {
+            document.title = config.siteName;
+        }
+    }, [config.siteName]);
 
     return (
         <div className="min-h-screen text-flux-white font-rajdhani selection:bg-soul-purple selection:text-white overflow-x-hidden">
@@ -46,7 +65,7 @@ const HolographicLayout: React.FC<LayoutProps> = ({ children }) => {
 
             {/* Main Content Area */}
             {/* Added substantial padding bottom for Dock, and top for NavBar */}
-            <main className="relative z-0 min-h-screen w-full overflow-y-auto overflow-x-hidden pt-24 pb-32 px-4 md:px-8">
+            <main className="relative z-0 min-h-screen w-full overflow-x-hidden pt-24 pb-32 px-4 md:px-8">
                 <div className="max-w-7xl mx-auto">
                     {children}
                 </div>
@@ -61,7 +80,7 @@ const HolographicLayout: React.FC<LayoutProps> = ({ children }) => {
             <CreatePostModal isOpen={isPostModalOpen} onClose={() => setIsPostModalOpen(false)} />
 
             {/* Ambient Noise/Glitch Layer (Optional, low opacity) */}
-            <div className="fixed inset-0 pointer-events-none z-[9999] opacity-[0.02] mix-blend-overlay bg-repeat bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMwMDAiLz4KPC9zdmc+')]" />
+            <div className="fixed inset-0 pointer-events-none z-[1] opacity-[0.02] mix-blend-overlay bg-repeat bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMwMDAiLz4KPC9zdmc+')]" />
         </div>
     );
 };

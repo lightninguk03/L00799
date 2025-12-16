@@ -62,7 +62,7 @@ const RepostModal = ({ isOpen, onClose, post }: RepostModalProps) => {
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.9, opacity: 0 }}
-                        className="relative w-full max-w-lg bg-[#0a0a14] border border-white/10 rounded-xl shadow-2xl"
+                        className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-[#0a0a14] border border-white/10 rounded-xl shadow-2xl"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Header */}

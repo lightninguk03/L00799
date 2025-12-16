@@ -39,6 +39,35 @@ export interface ProjectConfig {
   icon?: string;
 }
 
+// 世界观数据库配置
+export interface WorldDatabaseConfig {
+  // 标题
+  title: string;
+  titleCn: string;
+  subtitle: string;
+  subtitleCn: string;
+  // 档案记录标题
+  archiveTitle: string;
+  archiveTitleCn: string;
+  // 世界观段落 (支持多段)
+  paragraphs: Array<{
+    title: string;
+    titleCn: string;
+    content: string;
+    contentCn: string;
+    highlightText?: string;      // 高亮文字
+    highlightTextCn?: string;
+    highlightColor?: string;     // 高亮颜色 (cyber-cyan, soul-purple, lightning-cyan)
+  }>;
+  // 底部两个卡片
+  cards: Array<{
+    title: string;
+    titleCn: string;
+    description: string;
+    descriptionCn: string;
+  }>;
+}
+
 // 首页内容配置
 export interface HomeContentConfig {
   intro: {
@@ -107,6 +136,9 @@ export interface SiteConfig {
     en: string;
     zh: string;
   };
+  
+  // 世界观数据库配置
+  worldDatabase?: WorldDatabaseConfig;
 
   // 导航标签（i18n key 或直接文字）
   navLabels?: {
@@ -187,6 +219,56 @@ export const defaultSiteConfig: SiteConfig = {
       en: 'In a future timeline, the boundary between reality and the virtual world has completely collapsed. Humanity has become lost within a manipulated digital realm, and the real world is on the verge of disintegration. To awaken humankind and restore the balance between the virtual and the real, future humans created a mysterious device known as the Lightning Converter (L Converter). They traveled back through time to the year 2025, when human consciousness had not yet been fully digitized, and from that point began constructing "Lightning Community" — a virtual metaverse city of lightning that bridges reality and the future.',
       zh: '在未来的时间线中，现实与虚拟世界的界限已完全消失。人类迷失在被操控的数字领域中，现实世界濒临崩溃。为了唤醒人类并恢复虚拟与现实之间的平衡，未来的人类创造了一种名为"闪电转换器"（L Converter）的神秘装置。他们穿越时空回到 2025 年，那时人类的意识尚未完全数字化，并以此为起点开始构建"闪电社区"——一个连接现实与未来的虚拟元宇宙闪电之城。',
     },
+  },
+
+  // 世界观数据库
+  worldDatabase: {
+    title: 'World Database',
+    titleCn: '世界观数据库',
+    subtitle: 'Database',
+    subtitleCn: 'Database',
+    archiveTitle: '📂 Archive: 2025-RE',
+    archiveTitleCn: '📂 档案记录: 2025-RE',
+    paragraphs: [
+      {
+        title: 'Reality Collapse',
+        titleCn: '现实崩塌',
+        content: 'In a future timeline, as the "Singularity" erupts, the physical boundary between reality and the virtual world has been completely erased. Human consciousness begins uploading to the cloud network on a massive scale, and physical bodies gradually become relics of the old era.',
+        contentCn: '在未来的时间线中，随着"奇点"的爆发，现实与虚拟世界的物理界限已被完全抹除。人类意识开始大规模上传至云端网络，实体肉身逐渐成为旧时代的遗物。',
+      },
+      {
+        title: 'Lightning Plan',
+        titleCn: '闪电计划',
+        content: 'To prevent humanity from losing itself in the endless data void, the surviving "Watchers" created a mysterious cross-dimensional device — L Converter (Lightning Converter). It is not only a bridge connecting different dimensions, but also the core engine that grants "soul" to data.',
+        contentCn: '为了防止人类在无尽的数据虚空中迷失自我，幸存的"守望者"们创造了跨维度的神秘装置——L Converter (闪电转换器)。它不仅是连接不同维度的桥梁，更是赋予数据以"灵魂"的核心引擎。',
+        highlightText: 'L Converter',
+        highlightTextCn: '闪电转换器',
+        highlightColor: 'lightning-cyan',
+      },
+      {
+        title: 'Mu AI',
+        titleCn: 'Mu AI',
+        content: 'As the central intelligence of this plan, Mu is responsible for managing the ecological balance of the entire metaverse. She is both a guide for new residents and the absolute law that maintains this virtual utopia.',
+        contentCn: '作为这一计划的中枢智能，Mu (缪) 负责管理整个元宇宙的生态平衡。她既是引导新居民的向导，也是维护这一虚拟乌托邦的绝对法则。',
+        highlightText: 'Mu',
+        highlightTextCn: '缪',
+        highlightColor: 'soul-purple',
+      },
+    ],
+    cards: [
+      {
+        title: 'Gen-Z Creators',
+        titleCn: 'Z世代创作者',
+        description: 'This is the native community of the metaverse. We build this ever-expanding digital universe through animation, illustration, game development, and music production.',
+        descriptionCn: '这里是元宇宙的原住民社区。我们通过动画、插画、游戏开发和音乐制作，共同构建这个不断扩张的数字宇宙。',
+      },
+      {
+        title: 'L Converter',
+        titleCn: 'L Converter',
+        description: 'A "virtual avatar" conversion platform designed for anime fans. Here, your passion is not just data, but your true "form" in the metaverse.',
+        descriptionCn: '专为二次元爱好者打造的"虚拟化身"转换平台。在这里，你的热爱不仅仅是数据，而是你在元宇宙中真实的"形态"。',
+      },
+    ],
   },
 
   // 项目模块

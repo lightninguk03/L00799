@@ -29,8 +29,10 @@ const Login = () => {
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
             });
 
-            const { access_token } = res.data;
+            const { access_token, refresh_token } = res.data;
+            // 保存双 Token
             localStorage.setItem('access_token', access_token);
+            localStorage.setItem('refresh_token', refresh_token);
             navigate('/');
         } catch (err: any) {
             console.error(err);
