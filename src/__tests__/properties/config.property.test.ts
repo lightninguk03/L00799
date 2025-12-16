@@ -11,8 +11,7 @@ import * as fc from 'fast-check';
 import { defaultSiteConfig } from '../../config/site.config';
 
 // Arbitrary for generating valid SiteConfig objects
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const siteConfigArbitrary = fc.record({
+const _siteConfigArbitrary = fc.record({
   siteName: fc.string({ minLength: 1, maxLength: 50 }),
   siteNameCn: fc.string({ minLength: 1, maxLength: 50 }),
   communityName: fc.string({ minLength: 1, maxLength: 50 }),

@@ -44,7 +44,7 @@ const NeonButton = React.forwardRef<HTMLButtonElement, NeonButtonProps>(
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-700 ease-out skew-x-12" />
 
                 <span className="relative z-10 flex items-center justify-center gap-2">
-                    {children}
+                    {children as React.ReactNode}
                 </span>
             </motion.button>
         );
