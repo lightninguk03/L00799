@@ -8,7 +8,7 @@ from slowapi.errors import RateLimitExceeded
 from contextlib import asynccontextmanager
 from app.config import settings
 from app.database import create_db_and_tables
-from app.api.v1 import auth, posts, gallery, ai, system, notifications, search, users, admin_views
+from app.api.v1 import auth, posts, gallery, ai, system, notifications, search, users, admin_views, banners
 from app.core.exceptions import APIException
 from app.core.rate_limit import limiter
 
@@ -68,6 +68,7 @@ app.include_router(system.router, prefix="/system", tags=["系统"])
 app.include_router(notifications.router, prefix="/notifications", tags=["通知"])
 app.include_router(search.router, prefix="/search", tags=["搜索"])
 app.include_router(users.router, prefix="/users", tags=["用户"])
+app.include_router(banners.router, prefix="/banners", tags=["轮播图"])
 
 @app.get("/")
 def root():

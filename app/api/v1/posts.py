@@ -58,11 +58,29 @@ def build_post_response(post: Post, session: Session, current_user_id: Optional[
             )
         ).first() is not None
 
-    # 解析 media_urls JSON 字符串为数组
+    # 解析 media_urls JSON 字符串
     media_urls_list = []
+    thumbnail = None
     if post.media_urls:
         try:
-            media_urls_list = json.loads(post.media_urls)
+            parsed = json.loads(post.media_urls)
+            # 新格式: {"videos": [...], "thumbnail": "..."}
+            if isinstance(parsed, dict) and "videos" in parsed:
+                media_urls_list = parsed["videos"]
+                thumbnail = parsed.get("thumbnail")
+            # 旧格式: [...]
+            elif isinstance(parsed, list):
+                media_urls_list = parsed
+                # 对于视频类型，如果没有缩略图，检查是否存在对应的缩略图文件
+                if post.media_type == MediaType.VIDEO and media_urls_list:
+                    video_url = media_urls_list[0]
+                    # 尝试查找已存在的缩略图
+                    from pathlib import Path
+                    video_filename = Path(video_url).stem
+                    potential_thumb = f"/uploads/thumbnails/{video_filename}_thumb.jpg"
+                    thumb_path = Path(f".{potential_thumb}")
+                    if thumb_path.exists():
+                        thumbnail = potential_thumb
         except json.JSONDecodeError:
             media_urls_list = []
 
@@ -72,6 +90,7 @@ def build_post_response(post: Post, session: Session, current_user_id: Optional[
         "content": post.content,
         "media_type": post.media_type,
         "media_urls": media_urls_list,  # 返回数组而非 JSON 字符串
+        "thumbnail": thumbnail,  # 视频缩略图
         "category_id": post.category_id,
         "repost_source_id": post.repost_source_id,
         "created_at": post.created_at,
@@ -95,6 +114,7 @@ async def create_post(
 ):
     media_urls = []
     media_type = MediaType.TEXT
+    thumbnail_url = None
 
     if files:
         for file in files:
@@ -106,18 +126,29 @@ async def create_post(
                 media_type = MediaType.IMAGE
             elif file.content_type and file.content_type.startswith("video/"):
                 await validate_video(file)
-                url = await save_file(file, "videos", user_id=current_user.id)
-                media_urls.append(url)
+                result = await save_file(file, "videos", user_id=current_user.id)
+                # 视频返回字典 {"url": "...", "thumbnail": "..."}
+                if isinstance(result, dict):
+                    media_urls.append(result["url"])
+                    thumbnail_url = result.get("thumbnail")
+                else:
+                    media_urls.append(result)
                 media_type = MediaType.VIDEO
             else:
                 # 拒绝其他类型文件
                 raise APIException(400, "invalid_file_type", "只支持上传图片和视频文件")
 
+    # 如果有缩略图，存储在 media_urls JSON 中
+    media_data = media_urls
+    if thumbnail_url and media_type == MediaType.VIDEO:
+        # 存储格式: {"videos": [...], "thumbnail": "..."}
+        media_data = {"videos": media_urls, "thumbnail": thumbnail_url}
+
     post = Post(
         user_id=current_user.id,
         content=content,
         media_type=media_type,
-        media_urls=json.dumps(media_urls) if media_urls else None,
+        media_urls=json.dumps(media_data) if media_data else None,
         category_id=category_id
     )
     session.add(post)

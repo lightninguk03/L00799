@@ -95,7 +95,8 @@ async def chat(
     try:
         client = AsyncOpenAI(
             api_key=settings.OPENAI_API_KEY,
-            base_url="https://api.deepseek.com"
+            base_url="https://api.deepseek.com",
+            timeout=60.0  # 增加超时时间到60秒
         )
         response = await client.chat.completions.create(
             model=settings.OPENAI_MODEL,
@@ -104,7 +105,11 @@ async def chat(
             max_tokens=settings.AI_MAX_TOKENS
         )
         ai_content = response.choices[0].message.content
-    except Exception:
+    except Exception as e:
+        print(f"[AI Error] {type(e).__name__}: {e}")
+        # 返回友好的错误提示
+        if "timeout" in str(e).lower():
+            raise APIException(500, "ai_timeout")
         raise APIException(500, "ai_service_error")
 
     ai_msg = ChatMessage(

@@ -18,70 +18,68 @@ def get_config_value(configs: dict, *keys, default=""):
 @router.get("/config")
 def get_system_config(session: Session = Depends(get_session)):
     """
-    获取前端需要的网站配置
+    获取前端需要的网站配置 V2.6.6
     
-    返回格式按照前端规划文档设计，支持中英双语
-    兼容多种配置项命名（site_xxx, xxx 等）
+    精简版：只返回前端实际使用的配置项
     """
     configs = get_public_configs(session)
     
-    # 构建社交链接数组
-    social_links = []
-    if configs.get("social_instagram"):
-        social_links.append({"name": "Instagram", "url": configs["social_instagram"], "icon": "instagram"})
-    if configs.get("social_netease"):
-        social_links.append({"name": "网易云音乐", "url": configs["social_netease"], "icon": "netease"})
-    if configs.get("social_twitter"):
-        social_links.append({"name": "Twitter", "url": configs["social_twitter"], "icon": "twitter"})
-    if configs.get("social_discord"):
-        social_links.append({"name": "Discord", "url": configs["social_discord"], "icon": "discord"})
-    if configs.get("social_bilibili"):
-        social_links.append({"name": "哔哩哔哩", "url": configs["social_bilibili"], "icon": "bilibili"})
-    custom_links = configs.get("social_custom", [])
-    if isinstance(custom_links, list):
-        social_links.extend(custom_links)
-    
     return {
+        # 品牌信息
         "site_name": get_config_value(configs, "site_name", default="LETAVERSE"),
-        "site_name_cn": get_config_value(configs, "site_name_cn", default="莱塔宇宙"),
-        "community_name": get_config_value(configs, "community_name", default="Lightning Community"),
-        "community_name_cn": get_config_value(configs, "community_name_cn", default="闪电社区"),
         "slogan": get_config_value(configs, "slogan"),
         "slogan_cn": get_config_value(configs, "slogan_cn"),
-
-        "logo": get_config_value(configs, "site_logo", "logo"),
-        "favicon": get_config_value(configs, "site_favicon", "favicon"),
-        "background": get_config_value(configs, "site_background", "background"),
-        "hero_background": get_config_value(configs, "site_hero_background", "hero_background"),
-        "ai_kanban": get_config_value(configs, "site_ai_kanban", "ai_kanban"),
-        "default_avatar": get_config_value(configs, "site_default_avatar", "default_avatar"),
-        "intro": {
-            "en": get_config_value(configs, "intro_en"),
-            "zh": get_config_value(configs, "intro_zh"),
-        },
-        "world_background": {
-            "en": get_config_value(configs, "world_background_en"),
-            "zh": get_config_value(configs, "world_background_zh"),
-        },
-        "social_links": social_links,
-        "features": {
-            "ai_chat": configs.get("enable_ai_chat", True),
-            "registration": configs.get("enable_registration", True),
-            "email_verify": configs.get("require_email_verify", False),
-        },
+        
+        # 视觉资源
+        "logo": get_config_value(configs, "logo"),
+        "favicon": get_config_value(configs, "favicon"),
+        "background": get_config_value(configs, "background"),
+        "hero_background": get_config_value(configs, "hero_background"),
+        "hero_banners": parse_json_array(configs.get("hero_banners", "[]")),
+        "ai_kanban": get_config_value(configs, "ai_kanban"),
+        "default_avatar": get_config_value(configs, "default_avatar"),
+        
+        # AI 助手
         "ai": {
             "name": get_config_value(configs, "ai_name", default="Mu AI"),
             "name_cn": get_config_value(configs, "ai_name_cn", default="穆爱"),
             "title": get_config_value(configs, "ai_title", default="Central Brain"),
             "title_cn": get_config_value(configs, "ai_title_cn", default="中枢脑"),
             "greeting": get_config_value(configs, "ai_greeting", default="Hello~ I'm Mu ✨"),
-            "greeting_cn": get_config_value(configs, "ai_greeting_cn", "ai_welcome_message", default="你好呀～我是穆爱 ✨"),
+            "greeting_cn": get_config_value(configs, "ai_greeting_cn", default="你好呀～我是穆爱 ✨"),
         },
-        "community": {
-            "status_text": get_config_value(configs, "community_status_text", default="SYSTEM: L-CONVERTER ONLINE"),
-            "version": get_config_value(configs, "community_version", default="V2.0.45 BETA"),
-            "create_post_text": get_config_value(configs, "create_post_text", default="Create Post"),
-            "create_post_text_cn": get_config_value(configs, "create_post_text_cn", default="上传记忆碎片"),
-        },
-        "site_description": get_config_value(configs, "site_description", "site_name_cn", default="莱塔宇宙") + " - ACG社区",
+        
+        # 首页内容
+        "world_database": parse_json_object(configs.get("world_database", "{}")),
+        "world_database_media": parse_json_array(configs.get("world_database_media", "[]")),
+        "social_links": parse_json_array(configs.get("social_links", "[]")),
+        "announcement": parse_json_object(configs.get("announcement", "{}")),
     }
+
+
+def parse_json_array(value):
+    """解析 JSON 数组字符串，返回列表"""
+    import json
+    if isinstance(value, list):
+        return value
+    if isinstance(value, str) and value.strip():
+        try:
+            result = json.loads(value)
+            return result if isinstance(result, list) else []
+        except:
+            return []
+    return []
+
+
+def parse_json_object(value):
+    """解析 JSON 对象字符串，返回字典"""
+    import json
+    if isinstance(value, dict):
+        return value
+    if isinstance(value, str) and value.strip():
+        try:
+            result = json.loads(value)
+            return result if isinstance(result, dict) else {}
+        except:
+            return {}
+    return {}

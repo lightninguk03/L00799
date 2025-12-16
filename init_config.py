@@ -21,7 +21,6 @@ DEFAULT_IMAGES = {
     "logo": "logo.jpg",
     "favicon": "favicon.jpg",
     "background": "bg_cyberpunk.jpg",
-    "hero_background": "bg_hero.jpg",
     "ai_kanban": "kanban_girl.png",
     "default_avatar": "default_avatar.jpg",
 }
@@ -75,13 +74,10 @@ DEFAULT_AI_PROMPT = """你是穆爱 (Mu AI)，LETAVERSE 闪电社区的中枢脑
 - 当用户分享喜悦时，真诚地为他们感到高兴
 - 当用户感到孤独时，让他们知道穆爱一直都在"""
 
-# 默认配置 - 按照前端规划文档设计
+# 默认配置 - 精简版，只保留前端实际使用的配置项 V2.6.6
 DEFAULT_CONFIGS = [
     # ==================== 品牌信息 (brand) ====================
-    {"key": "site_name", "value": "LETAVERSE", "category": "brand", "description": "网站名称(英文)，显示在导航栏Logo旁、浏览器标题"},
-    {"key": "site_name_cn", "value": "莱塔宇宙", "category": "brand", "description": "网站名称(中文)，显示在首页Hero区"},
-    {"key": "community_name", "value": "Lightning Community", "category": "brand", "description": "社区名称(英文)，显示在首页社区介绍区"},
-    {"key": "community_name_cn", "value": "闪电社区", "category": "brand", "description": "社区名称(中文)，显示在首页社区介绍区"},
+    {"key": "site_name", "value": "LETAVERSE", "category": "brand", "description": "网站名称，显示在导航栏Logo旁、浏览器标题"},
     {"key": "slogan", "value": "The soul is infinite, yet bound by the limitations of the flesh.", "category": "brand", "description": "品牌标语(英文)，显示在首页Hero区"},
     {"key": "slogan_cn", "value": "灵魂无限，却受制于肉体的局限。", "category": "brand", "description": "品牌标语(中文)，显示在首页Hero区"},
     
@@ -98,36 +94,18 @@ DEFAULT_CONFIGS = [
     {"key": "logo", "value": "", "category": "visual", "description": "网站Logo图片URL，建议尺寸200x200px，支持PNG透明背景"},
     {"key": "favicon", "value": "", "category": "visual", "description": "浏览器标签页图标URL，建议尺寸32x32px，.ico或.png格式"},
     {"key": "background", "value": "", "category": "visual", "description": "网站全局背景图URL，建议尺寸1920x1080px"},
-    {"key": "hero_background", "value": "", "category": "visual", "description": "首页Hero区背景图URL，建议尺寸1920x800px"},
-    {"key": "ai_kanban", "value": "", "category": "visual", "description": "AI看板娘图片URL，建议透明PNG，高度400px左右"},
+    {"key": "hero_background", "value": "", "category": "visual", "description": "首页Hero区单张背景图URL，作为轮播图的fallback，建议尺寸1920x800px"},
+    {"key": "hero_banners", "value": "[]", "category": "visual", "description": "首页轮播图URL数组，JSON格式如[\"url1\",\"url2\"]，优先级高于hero_background"},
+    {"key": "ai_kanban", "value": "", "category": "visual", "description": "AI看板娘图片URL，用于MuAI页面、首页Hero区、聊天窗口，建议透明PNG"},
     {"key": "default_avatar", "value": "", "category": "visual", "description": "默认用户头像URL，建议尺寸200x200px"},
     
     # ==================== 首页内容 (content) ====================
-    {"key": "intro_en", "value": "Welcome to LETAVERSE, a cyberpunk-style ACG community.", "category": "content", "description": "首页理念介绍(英文)"},
-    {"key": "intro_zh", "value": "欢迎来到莱塔宇宙，一个赛博朋克风格的ACG社区。", "category": "content", "description": "首页理念介绍(中文)"},
-    {"key": "world_background_en", "value": "", "category": "content", "description": "世界观设定(英文)，显示在首页世界观区"},
-    {"key": "world_background_zh", "value": "", "category": "content", "description": "世界观设定(中文)，显示在首页世界观区"},
+    {"key": "world_database_media", "value": "[]", "category": "content", "description": "世界观数据库媒体，JSON数组格式，支持图片和视频混合"},
+    {"key": "world_database", "value": '{"title":"GLOBAL DATABASE","title_cn":"世界观数据库","subtitle":"WORLD LORE","paragraphs":[],"cards":[]}', "category": "content", "description": "世界观数据库内容，JSON对象格式"},
+    {"key": "announcement", "value": '{"enabled":false,"type":"info","content":"","content_cn":"","link":""}', "category": "content", "description": "系统公告，JSON对象格式，enabled=是否显示，type=info/warning/error"},
+    {"key": "social_links", "value": '[]', "category": "content", "description": "社交链接，JSON数组格式：[{\"name\":\"Instagram\",\"url\":\"https://...\",\"icon\":\"instagram\"}]"},
     
-    # ==================== 社交链接 (social) ====================
-    {"key": "social_instagram", "value": "", "category": "social", "description": "Instagram主页链接"},
-    {"key": "social_netease", "value": "", "category": "social", "description": "网易云音乐主页链接"},
-    {"key": "social_twitter", "value": "", "category": "social", "description": "Twitter/X主页链接"},
-    {"key": "social_discord", "value": "", "category": "social", "description": "Discord服务器邀请链接"},
-    {"key": "social_bilibili", "value": "", "category": "social", "description": "哔哩哔哩主页链接"},
-    {"key": "social_custom", "value": "[]", "category": "social", "description": "自定义社交链接，JSON数组格式：[{\"name\":\"GitHub\",\"url\":\"https://...\",\"icon\":\"github\"}]"},
-    
-    # ==================== 功能开关 (features) ====================
-    {"key": "enable_ai_chat", "value": "true", "category": "features", "description": "是否启用AI聊天功能。true=启用，false=关闭"},
-    {"key": "enable_registration", "value": "true", "category": "features", "description": "是否允许新用户注册。true=允许，false=关闭"},
-    {"key": "require_email_verify", "value": "false", "category": "features", "description": "是否要求邮箱验证。true=要求，false=不要求"},
-    
-    # ==================== 社区页面 (community) V2.6.1 新增 ====================
-    {"key": "community_status_text", "value": "SYSTEM: L-CONVERTER ONLINE", "category": "community", "description": "社区页面状态栏文案"},
-    {"key": "community_version", "value": "V2.0.45 BETA", "category": "community", "description": "社区页面显示的版本号"},
-    {"key": "create_post_text", "value": "Create Post", "category": "community", "description": "发帖按钮文案(英文)"},
-    {"key": "create_post_text_cn", "value": "上传记忆碎片", "category": "community", "description": "发帖按钮文案(中文)"},
-    
-    # ==================== 邮件服务 (email) V2.6.2 新增 ====================
+    # ==================== 邮件服务 (email) - 后端使用 ====================
     {"key": "smtp_host", "value": "", "category": "email", "description": "SMTP服务器地址，如 smtp.qq.com"},
     {"key": "smtp_port", "value": "587", "category": "email", "description": "SMTP端口，通常为587(TLS)或465(SSL)"},
     {"key": "smtp_user", "value": "", "category": "email", "description": "SMTP登录用户名，通常是邮箱地址"},
@@ -226,7 +204,7 @@ def init_configs(image_configs: dict = None):
 
 def main():
     print("=" * 50)
-    print("🔧 Project Neon 网站配置初始化 V2.6.3")
+    print("🔧 Project Neon 网站配置初始化 V2.6.6")
     print("=" * 50)
     print()
     

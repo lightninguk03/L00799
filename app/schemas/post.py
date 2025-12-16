@@ -17,6 +17,7 @@ class PostResponse(BaseModel):
     content: str
     media_type: MediaType
     media_urls: list[str] = []  # 改为数组类型
+    thumbnail: str | None = None  # 视频缩略图 URL
     category_id: int | None
     repost_source_id: int | None
     created_at: datetime

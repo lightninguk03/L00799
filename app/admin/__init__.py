@@ -18,9 +18,19 @@ BEIJING_TZ = timezone(timedelta(hours=8))
 
 def format_datetime_beijing(model, attribute):
     """将 UTC 时间转换为北京时间显示"""
-    value = getattr(model, attribute.key, None)
+    # 兼容 attribute 可能是字符串或对象的情况
+    if isinstance(attribute, str):
+        attr_key = attribute
+    else:
+        attr_key = getattr(attribute, 'key', str(attribute))
+    
+    value = getattr(model, attr_key, None)
     if value is None:
         return "-"
+    
+    # 如果不是 datetime 类型，直接返回
+    if not isinstance(value, datetime):
+        return str(value) if value else "-"
     
     # 如果是 naive datetime，假设是 UTC
     if value.tzinfo is None:
@@ -284,7 +294,7 @@ class SiteConfigAdmin(ModelView, model=SiteConfig):
     
     form_args = {
         "key": {"description": "配置项的唯一标识，如 site_name"},
-        "value": {"description": "配置的值，JSON格式的数组/对象需要用双引号"},
+        "value": {"description": "配置的值，JSON格式的数组/对象需要用双引号。可以留空"},
         "category": {"description": "配置分类：brand=品牌信息, ai=AI助手, visual=视觉资源, content=首页内容, social=社交链接, features=功能开关"},
         "description": {"description": "配置项的中文说明"},
     }

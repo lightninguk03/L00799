@@ -33,7 +33,7 @@ def store_refresh_token(session: Session, user_id: int, token: str) -> None:
     """存储 Refresh Token 到数据库"""
     from app.models.refresh_token import RefreshToken
     
-    expires_at = datetime.utcnow() + timedelta(days=7)
+    expires_at = datetime.utcnow() + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
     db_token = RefreshToken(
         user_id=user_id,
         token=token,
