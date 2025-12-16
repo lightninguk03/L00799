@@ -10,8 +10,8 @@ import { describe, it, expect } from 'vitest';
 import * as fc from 'fast-check';
 import { defaultSiteConfig } from '../../config/site.config';
 
-// Arbitrary for generating valid SiteConfig objects
-const _siteConfigArbitrary = fc.record({
+// Arbitrary for generating valid SiteConfig objects (exported for potential future use)
+export const siteConfigArbitrary = fc.record({
   siteName: fc.string({ minLength: 1, maxLength: 50 }),
   siteNameCn: fc.string({ minLength: 1, maxLength: 50 }),
   communityName: fc.string({ minLength: 1, maxLength: 50 }),
