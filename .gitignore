@@ -30,3 +30,22 @@ uploads/
 Thumbs.db
 nul
 $null
+
+# Kiro
+.kiro/
+
+# Test files
+test_*.py
+.pytest_cache/
+
+# Local scripts
+start.bat
+start.sh
+restart.py
+
+# Image folder (local dev)
+image/
+
+# Deployment docs
+生产部署任务清单.md
+部署指南.md

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlmodel import Session, select, func
 from typing import Optional
 from app.database import get_session
-from app.dependencies import get_current_user
+from app.dependencies import get_current_user, get_current_user_optional
 from app.models.user import User
 from app.models.post import Post
 from app.models.follow import Follow
@@ -16,16 +16,11 @@ from app.api.v1.posts import build_post_response
 router = APIRouter()
 
 
-def get_optional_user(session: Session = Depends(get_session)):
-    """可选的用户认证，用于公开接口"""
-    return None
-
-
 @router.get("/{user_id}", response_model=UserProfileResponse)
-def get_user_profile(
+async def get_user_profile(
     user_id: int,
     session: Session = Depends(get_session),
-    current_user: Optional[User] = Depends(get_optional_user)
+    current_user: Optional[User] = Depends(get_current_user_optional)
 ):
     """获取用户个人主页"""
     user = session.get(User, user_id)
