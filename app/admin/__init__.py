@@ -66,7 +66,7 @@ class UserAdmin(ModelView, model=User):
     column_list = [User.id, User.username, User.email, User.avatar, User.is_verified, User.is_banned, User.created_at]
     column_searchable_list = [User.username, User.email]
     column_sortable_list = [User.id, User.username, User.created_at, User.is_banned]
-    column_default_sort = [(User.created_at, True)]
+    column_default_sort = [("created_at", True)]
     
     # 封禁相关字段可编辑
     form_excluded_columns = ["password_hash", "posts", "comments", "interactions", "notifications"]
@@ -114,7 +114,7 @@ class PostAdmin(ModelView, model=Post):
     column_list = [Post.id, Post.user_id, Post.content, Post.media_type, Post.category_id, Post.view_count, Post.created_at]
     column_searchable_list = [Post.content]
     column_sortable_list = [Post.id, Post.created_at, Post.view_count]
-    column_default_sort = [(Post.created_at, True)]
+    column_default_sort = [("created_at", True)]
     
     form_excluded_columns = ["comments", "interactions"]
     
@@ -155,7 +155,7 @@ class CommentAdmin(ModelView, model=Comment):
     column_list = [Comment.id, Comment.user_id, Comment.post_id, Comment.content, Comment.created_at]
     column_searchable_list = [Comment.content]
     column_sortable_list = [Comment.id, Comment.created_at]
-    column_default_sort = [(Comment.created_at, True)]
+    column_default_sort = [("created_at", True)]
     
     column_labels = {
         Comment.id: "ID",
@@ -181,7 +181,7 @@ class NotificationAdmin(ModelView, model=Notification):
     
     column_list = [Notification.id, Notification.user_id, Notification.type, Notification.is_read, Notification.created_at]
     column_sortable_list = [Notification.id, Notification.created_at, Notification.is_read]
-    column_default_sort = [(Notification.created_at, True)]
+    column_default_sort = [("created_at", True)]
     
     column_labels = {
         Notification.id: "ID",
@@ -210,7 +210,7 @@ class AdminUserAdmin(ModelView, model=AdminUser):
     
     column_list = [AdminUser.id, AdminUser.username, AdminUser.role, AdminUser.is_active, AdminUser.last_login, AdminUser.created_at]
     column_sortable_list = [AdminUser.id, AdminUser.created_at, AdminUser.last_login]
-    column_default_sort = [(AdminUser.created_at, True)]
+    column_default_sort = [("created_at", True)]
     
     form_excluded_columns = ["password_hash", "last_login", "created_at"]
     
@@ -281,7 +281,7 @@ class SiteConfigAdmin(ModelView, model=SiteConfig):
     column_list = [SiteConfig.id, SiteConfig.key, SiteConfig.value, SiteConfig.category, SiteConfig.description, SiteConfig.updated_at]
     column_searchable_list = [SiteConfig.key, SiteConfig.description]
     column_sortable_list = [SiteConfig.id, SiteConfig.category, SiteConfig.updated_at]
-    column_default_sort = [(SiteConfig.category, False)]
+    column_default_sort = [("category", False)]
     
     column_labels = {
         SiteConfig.id: "ID",
@@ -338,7 +338,7 @@ class MediaAdmin(ModelView, model=Media):
     
     column_list = ["preview", Media.id, Media.original_name, Media.file_type, Media.file_size, Media.created_at]
     column_sortable_list = [Media.id, Media.created_at, Media.file_size]
-    column_default_sort = [(Media.created_at, True)]
+    column_default_sort = [("created_at", True)]
     
     column_labels = {
         "preview": "预览",
@@ -380,7 +380,7 @@ class AdminLogAdmin(ModelView, model=AdminLog):
                    AdminLog.target_name, AdminLog.ip_address, AdminLog.created_at]
     column_searchable_list = [AdminLog.admin_username, AdminLog.target_name, AdminLog.action]
     column_sortable_list = [AdminLog.id, AdminLog.created_at, AdminLog.action]
-    column_default_sort = [(AdminLog.created_at, True)]
+    column_default_sort = [("created_at", True)]
     
     column_labels = {
         AdminLog.admin_username: "操作人",
