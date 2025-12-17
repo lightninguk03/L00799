@@ -197,7 +197,7 @@ const UserProfile = () => {
                 ) : user?.is_following ? (
                   <>
                     <UserMinus className="w-4 h-4" />
-                    {t('user.unfollow')}
+                    {t('user.following')}
                   </>
                 ) : (
                   <>
